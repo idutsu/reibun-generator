@@ -1,0 +1,50 @@
+*{
+	padding: 0;
+	margin: 0;
+    color: #FFF;
+}
+
+html{
+    height:100%;
+    font-size: 16px;
+}
+
+body{
+    height:100%;
+    font-size: 1rem;
+    background-color: #222;
+}
+
+ul{
+	list-style-type: none;
+}
+
+.current{
+	color: red;
+}
+
+button{
+	width: 25%;
+	height: 50px;
+	line-height: 50px;
+	font-size: 2rem;
+}
+
+#keep-list .list{
+    height:300px;
+    overflow-y: auto;
+}
+
+#edit-list{
+	display: flex;
+    font-size:3rem
+}
+
+#keep-list{
+	display: flex;
+}
+
+#status {
+	display: none;
+}
+
