@@ -1,12 +1,12 @@
-const EL_ROOT = document.getElementById("root");
-const EL_EDIT_NOUN = document.getElementById("edit-noun");
-const EL_EDIT_PART = document.getElementById("edit-part");
-const EL_EDIT_VERB = document.getElementById("edit-verb");
+const EL_ROOT           = document.getElementById("root");
+const EL_EDIT_NOUN      = document.getElementById("edit-noun");
+const EL_EDIT_PART      = document.getElementById("edit-part");
+const EL_EDIT_VERB      = document.getElementById("edit-verb");
 const EL_KEEP_LIST_NOUN = document.getElementById("keep-noun");
 const EL_KEEP_LIST_PART = document.getElementById("keep-part");
 const EL_KEEP_LIST_VERB = document.getElementById("keep-verb");
-const EL_SEARCH_LIST = document.getElementById("search");
-const STATUS_BAR = document.getElementById('status');
+const EL_SEARCH_LIST    = document.getElementById("search");
+const STATUS_BAR        = document.getElementById('status');
 
 const CLASS_CURRENT_DATA = "current";
 const CLASS_DATA = "data";
@@ -50,7 +50,7 @@ Controller.prototype.getCurrentDataPath = function() {
 	return this.currentData.dataset.path;
 }
 
-Controller.prototype._setCurrentData = function(element){
+Controller.prototype._setCurrentData = function(element) {
 	this.currentData = element;
 	this.currentDataIndex = this._getDataIndex(element);
     this._setCurrentDataClass();
@@ -139,6 +139,7 @@ Controller.prototype.deleteData = function() {
 			this.prevList(index);
 		}
 	}
+    this.currentDdata = null;
 }
 
 Controller.prototype.keepData = function() {
@@ -224,20 +225,22 @@ Controller.prototype.fetchSearchWordsFromCsv = function(input, path) {
     fetch('/search?input=' + input + '&path=' + path)
         .then(response => response.json())
         .then(data => {
-			EL_SEARCH_LIST.innerHTML = '';
-            data.forEach((suggestion, index) => {
+            const fragment = document.createDocumentFragment(); 
+            EL_SEARCH_LIST.innerHTML = '';
+            data.forEach(suggestion => {
                 const li = document.createElement('li');
                 li.classList.add(CLASS_DATA);
                 li.dataset.path = path;
-				li.dataset.type = "search";
-				li.dataset.list = LIST_NUMBER_SEARCH;
+                li.dataset.type = "search";
+                li.dataset.list = LIST_NUMBER_SEARCH;
                 li.textContent = suggestion;
-                EL_SEARCH_LIST.appendChild(li);
-                if (index == 0) controller._setCurrentData(li);
+                fragment.appendChild(li);
             });
+            EL_SEARCH_LIST.appendChild(fragment);
+            controller._setCurrentData(EL_SEARCH_LIST.querySelector('li'));
         })
         .catch(error => console.error('Error:', error));
-}
+};
 
 Controller.prototype.startEdit = function() {
     const element = this.currentData;
@@ -261,7 +264,6 @@ let controller = new Controller();
 controller.fetchRondomWordFromCsv(DATA_PATH_NOUN);
 controller.fetchRondomWordFromCsv(DATA_PATH_PART);
 controller.fetchRondomWordFromCsv(DATA_PATH_VERB);
-
 
 const keysPressed = {};
 let isKeyPressed = false;
@@ -407,7 +409,6 @@ document.addEventListener('keyup', function(event) {
     delete keysPressed[event.key];
 	isKeyPressed = false;
 });
-
 
 [EL_EDIT_NOUN, EL_EDIT_PART, EL_EDIT_VERB].forEach(element => {
     element.addEventListener('input', function(event) {
