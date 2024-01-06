@@ -290,7 +290,7 @@ document.addEventListener('keydown', function(event) {
 	switch (event.key) {
 		case 'ArrowDown':
             if (!isEditing) {
-                if (currentListIndex == LIST_NUMBER_SLOT) {
+                if (currentDataType == DATA_TYPE_SLOT) {
                     controller.nextList();
                 } else {
                     controller.nextData();
@@ -311,7 +311,7 @@ document.addEventListener('keydown', function(event) {
 			break;
 		case 'ArrowUp':
             if (!isEditing) {
-                if (currentListIndex != LIST_NUMBER_SLOT) {
+                if (currentDataType != DATA_TYPE_SLOT) {
                     if (!controller.currentData.previousElementSibling) {
                         controller.initCurrentData();
                     } else {
@@ -334,7 +334,7 @@ document.addEventListener('keydown', function(event) {
 			break;
 		case 'ArrowRight':
             if (isEditing) return;
-			if (currentListIndex == LIST_NUMBER_SLOT) {
+			if (currentDataType == DATA_TYPE_SLOT) {
 				controller.nextData();
 			}else{
 				controller.nextList();
@@ -342,7 +342,7 @@ document.addEventListener('keydown', function(event) {
 			break;
 		case 'ArrowLeft':
             if (isEditing) return;
-			if (currentListIndex == LIST_NUMBER_SLOT) {
+			if (currentDataType == DATA_TYPE_SLOT) {
 				controller.prevData();
 			}else{
 				controller.prevList();
@@ -365,7 +365,7 @@ document.addEventListener('keydown', function(event) {
             }
 			break;
 		case 'Delete':
-			if (currentListIndex == LIST_NUMBER_SLOT  && !isEditing) {
+			if (currentDataType == DATA_TYPE_SLOT  && !isEditing) {
 				controller.currentData.innerText = "";
 			} else {
 				controller.deleteData();
@@ -380,6 +380,7 @@ document.addEventListener('keydown', function(event) {
             if (currentDataType == DATA_TYPE_SLOT) {
                 event.preventDefault();
                 controller.startEdit();
+                isEditing            = true;
                 isEditingCurrentData = true;    
             }
 			break;
