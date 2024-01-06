@@ -6,6 +6,7 @@
 <title>REIBUN GENERATOR</title>
 </head>
 <body>
+	<h1>REIBUN GENERATOR</h1>
 	<ul id="root">
 		<li>
 			<ul id="edit-list" class="list">
@@ -17,41 +18,37 @@
 		<li>
 			<ul id="keep-list">
 				<li>
-					<h3>名詞キープ</h3>
+					<h3>FAV NOUN</h3>
 					<ul id="keep-noun" class="list">
-						<li class="data" data-path="noun" data-type="keep" data-list="1">1</li>
-						<li class="data" data-path="noun" data-type="keep" data-list="1">2</li>
-						<li class="data" data-path="noun" data-type="keep" data-list="1">3</li>
 					</ul>
 				</li>
 				<li>
-					<h3>助詞キープ</h3>
+					<h3>FAV PART</h3>
 					<ul id="keep-part" class="list">
-						<li class="data" data-path="part" data-type="keep" data-list="2">1</li>
-						<li class="data" data-path="part" data-type="keep" data-list="2">2</li>
-						<li class="data" data-path="part" data-type="keep" data-list="2">3</li>
 					</ul>
 				</li>
 				<li>
-					<h3>動詞キープ</h3>
+					<h3>FAV VERB</h3>
 					<ul id="keep-verb" class="list">
-						<li class="data" data-path="verb" data-type="keep" data-list="3">1</li>
-						<li class="data" data-path="verb" data-type="keep" data-list="3">2</li>
-						<li class="data" data-path="verb" data-type="keep" data-list="3">3</li>
 					</ul>
 				</li>
 				<li>
-					<h3>検索ワード</h3>
+					<h3>SEARCH WORD</h3>
 					<ul id="search" class="list">
-						<li class="data" data-path="verb" data-type="search" data-list="4">1</li>
-						<li class="data" data-path="verb" data-type="search" data-list="4">2</li>
-						<li class="data" data-path="verb" data-type="search" data-list="4">3</li>
 					</ul>
 				</li>
 			</ul>
 		</li>
 	</ul>
-	<div id="status"></div><script src="index.js"></script>
-	
+	<dl>
+		<div><dt><span class="key">Enter</span></dt><dd><span>CHANGE THE WORD / USE THE FAVORITE WORD</span></dd></div>
+		<div><dt><span class="key">E</span></dt><dd><span>EDIT THE WORD</span></dd></div>
+		<div><dt><span class="key">ESC</span></dt><dd><span>FINISH EDITING THE WORD </span></dd></div>
+		<div><dt><span class="key">K</span></dt><dd><span>ADD THE WORD TO FAVORITE</span></dd></div>
+		<div><dt><span class="key">S</span></dt><dd><span>SAVE THE SENTENCE</span></dd></div>
+		<div><dt><span class="key">N</span></dt><dd><span>RESET THE CURSOR POSITION</span></dd></div>
+		<div><dt><span class="key">←</span><span class="key">→</span><span class="key">↑</span><span class="key">↓</span></dt><dd><span>ADVANCE TO THE NEXT WORD</span></dd></div>
+	</dl>
+	<div id="status">あいうえお</div><script src="index.js"></script>
 </body>
 </html>

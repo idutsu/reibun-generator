@@ -274,7 +274,6 @@ document.addEventListener('keydown', function(event) {
     
     let currentData      = controller.currentData;
     let currentDataType  = controller.getCurrentDataType();
-    let currentListIndex = controller.getCurrentListIndex();
     
     let isEditing            = false;
     let isEditingCurrentData = false;
@@ -395,7 +394,10 @@ document.addEventListener('keydown', function(event) {
 				controller.keepData();
 			}
 			break;
-	
+        case 'n':
+            if (isEditing) return;
+            controller.initCurrentData();
+            break;
 	}
 
 	isKeyPressed = true;
