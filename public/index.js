@@ -239,12 +239,22 @@ Controller.prototype.fetchSearchWordsFromCsv = function(input, path) {
         .catch(error => console.error('Error:', error));
 }
 
+Controller.prototype.startEdit = function() {
+    const element = this.currentData;
+    element.focus();
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+}
+
 Controller.prototype.endEdit = function() {
     [EL_EDIT_NOUN, EL_EDIT_PART, EL_EDIT_VERB].forEach(element => {
         element.blur();
     });                   
 }
-
 
 
 let controller = new Controller();
@@ -369,7 +379,7 @@ document.addEventListener('keydown', function(event) {
             if (isEditing && isEditingCurrentData) return; 
             if (currentDataType == DATA_TYPE_SLOT) {
                 event.preventDefault();
-                currentData.focus();
+                controller.startEdit();
                 isEditingCurrentData = true;    
             }
 			break;
