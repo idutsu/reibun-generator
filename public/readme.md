@@ -11,7 +11,7 @@ To set up the application on your local environment, follow these steps:
 First, clone the repository to your local machine:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/idutsu/reibun-generator.git
 ```
 
 ### Install dependencies
