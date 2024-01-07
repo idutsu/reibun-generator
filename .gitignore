@@ -1,2 +1,5 @@
 node_modules/
-csv/
+csv/reibun.csv
+csv/noun.csv
+csv/part.csv
+csv/verb.csv
