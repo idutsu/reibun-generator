@@ -57,16 +57,16 @@ The application uses three types of CSV dictionaries: `noun.csv`, `part.csv`, an
 Reibun-Generator is designed to be used with a keyboard only, without the need for a mouse. Here are the key functionalities:
 
 - Selected words are highlighted in green.
-- `↑` `↓` `→` `←`: Select the next word.
-- `Enter`: 
+- `↑` `↓` `→` `←` Select the next word.
+- `Enter`
     - If a word in the sentence is selected, replace it with a random word from the dictionary.
     - If a favorite word or a search word is selected, replace the word in the sentence with the selected one.
-- `K`: Add the selected word in the sentence to favorites.
-- `E`: 
+- `K` Add the selected word in the sentence to favorites.
+- `E` 
     - If a word in the sentence is selected, edit that word.
     - While typing, the search words area shows potential matching words.
-- `ESC`: Finish editing a word.
-- `S`: Save the sentence to `reibun.csv`.
-- `Delete`: Delete the selected word.
+- `ESC` Finish editing a word.
+- `S` Save the sentence.
+- `Delete` Delete the selected word.
 
 This application emphasizes keyboard navigation for efficiency and ease of use.
