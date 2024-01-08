@@ -1,6 +1,6 @@
-# Reibun-Generator
+# Reibun Generator
 
-Reibun-Generator is a web application for generating Japanese example sentences. This application is built using Node.js.
+Reibun Generator is a web browser application primarily designed for local use, focused on generating Japanese example sentences. This application, built using Node.js, is optimized for PC use and is intended to be operated mainly through keyboard interactions.
 
 ## Installation
 
@@ -51,7 +51,7 @@ This area displays potential word suggestions when editing a word in the Example
 
 ## Japanese Dictionaries
 
-This application uses CSV Japanese dictionaries to create example sentences :
+This application uses [`IPA Dictionary`](https://github.com/idutsu/reibun-generator/blob/main/license.txt) to create example sentences :
 
 - [`noun.csv`](https://github.com/idutsu/reibun-generator/tree/main/csv/noun.csv): Contains nouns and their readings.
 - [`part.csv`](https://github.com/idutsu/reibun-generator/tree/main/csv/part.csv): Contains particles.
@@ -71,5 +71,5 @@ This application is designed to be used with a keyboard only, without the need f
     - If a word in the Example Sentence Area is selected, edit that word.
     - While typing, the Search Area shows potential matching words.
 - `ESC` Finish editing a word.
-- `S` Save to the [`noun.csv`](https://github.com/idutsu/reibun-generator/tree/main/csv/reibun.csv) file.
+- `S` Save to the `reibun.csv` file.
 - `Delete` Delete the selected word.
