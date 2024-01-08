@@ -31,7 +31,7 @@ Run the application using the following command:
 node app.js
 ```
 
-The application will be available at `localhost:3000`.
+This application will be available at `localhost:3000`.
 
 ## Application Structure
 
@@ -49,27 +49,27 @@ This area is for saving words from the Example Sentence Area. (Note that these a
 
 This area displays potential word suggestions when editing a word in the Example Sentence Area. Words can be selected and used in the example sentences by pressing the `K`.
 
-## Usage
-
-Reibun-Generator is designed to be used with a keyboard only, without the need for a mouse. Here are the key functionalities:
-
-- Selected words are highlighted in green.
-- `↑` `↓` `→` `←` Select the next word.
-- `Enter`
-    - If a word in the sentence is selected, replace it with a random word from the dictionary.
-    - If a favorite word or a search word is selected, replace the word in the sentence with the selected one.
-- `K` Add the selected word in the sentence to favorites.
-- `E`
-    - If a word in the sentence is selected, edit that word.
-    - While typing, the search words area shows potential matching words.
-- `ESC` Finish editing a word.
-- `S` Save the sentence.
-- `Delete` Delete the selected word.
-
 ## Japanese Dictionaries
 
-The application uses CSV Japanese dictionaries:
+This application uses CSV Japanese dictionaries to create example sentences :
 
 - [`noun.csv`](https://github.com/idutsu/reibun-generator/tree/main/csv/noun.csv): Contains nouns and their readings.
 - [`part.csv`](https://github.com/idutsu/reibun-generator/tree/main/csv/part.csv): Contains particles.
 - [`verb.csv`](https://github.com/idutsu/reibun-generator/tree/main/csv/verb.csv): Contains verbs and their readings.
+
+## Usage
+
+This application is designed to be used with a keyboard only, without the need for a mouse. Here are the key functionalities:
+
+- Selected words are highlighted in green.
+- `↑` `→` `↓` `←` Select the next word.
+- `Enter`
+    - If a word is selected in the Example Sentence Area, it will be replaced with a random word from the dictionary.
+    - If a word is selected in the Favorites Area or the Search Area, it will be used to replace the word in the sentence.
+- `K` Add the selected word in the Example Sentence Area to the Favorites Area.
+- `E`
+    - If a word in the Example Sentence Area is selected, edit that word.
+    - While typing, the Search Area shows potential matching words.
+- `ESC` Finish editing a word.
+- `S` Save to the [`noun.csv`](https://github.com/idutsu/reibun-generator/tree/main/csv/reibun.csv) file.
+- `Delete` Delete the selected word.

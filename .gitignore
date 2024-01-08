@@ -1,5 +1,3 @@
+.DS_Store
 node_modules/
-csv/reibun.csv
-csv/noun.csv
-csv/part.csv
-csv/verb.csv
+/reibun.csv

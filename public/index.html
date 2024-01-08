@@ -1,55 +1,87 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
-<meta charset="utf-8">
-<link rel="stylesheet" href="style.css" />
-<title>REIBUN GENERATOR</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css" />
+    <title>REIBUN GENERATOR</title>
 </head>
+
 <body>
-	<h1>REIBUN GENERATOR</h1>
-	<ul id="root">
-		<li>
-			<ul id="edit-list" class="list">
-				<li id="edit-noun" class="data" data-path="noun" data-type="slot" data-list="0" contenteditable="true">名詞</li>
-				<li id="edit-part" class="data" data-path="part" data-type="slot" data-list="0" contenteditable="true">助詞</li>
-				<li id="edit-verb" class="data" data-path="verb" data-type="slot" data-list="0" contenteditable="true">動詞</li>
-			</ul>
-		</li>
-		<li>
-			<ul id="keep-list">
-				<li>
-					<h3>FAV NOUN</h3>
-					<ul id="keep-noun" class="list">
-					</ul>
-				</li>
-				<li>
-					<h3>FAV PART</h3>
-					<ul id="keep-part" class="list">
-					</ul>
-				</li>
-				<li>
-					<h3>FAV VERB</h3>
-					<ul id="keep-verb" class="list">
-					</ul>
-				</li>
-				<li>
-					<h3>SEARCH WORD</h3>
-					<ul id="search" class="list">
-					</ul>
-				</li>
-			</ul>
-		</li>
-	</ul>
-	<dl>
-		<div><dt><span class="key">Enter</span></dt><dd><span>CHANGE THE WORD / USE THE FAVORITE WORD</span></dd></div>
-		<div><dt><span class="key">Delete</span></dt><dd><span>DELETE THE WORD</span></dd></div>
-		<div><dt><span class="key">E</span></dt><dd><span>EDIT THE WORD</span></dd></div>
-		<div><dt><span class="key">ESC</span></dt><dd><span>FINISH EDITING THE WORD </span></dd></div>
-		<div><dt><span class="key">K</span></dt><dd><span>ADD THE WORD TO FAVORITE</span></dd></div>
-		<div><dt><span class="key">S</span></dt><dd><span>SAVE THE SENTENCE</span></dd></div>
-		<div><dt><span class="key">N</span></dt><dd><span>RESET THE CURSOR POSITION</span></dd></div>
-		<div><dt><span class="key">←</span><span class="key">→</span><span class="key">↑</span><span class="key">↓</span></dt><dd><span>ADVANCE TO THE NEXT WORD</span></dd></div>
-	</dl>
-	<div id="status">あいうえお</div><script src="index.js"></script>
+    <h1>REIBUN GENERATOR</h1>
+    <ul id="root">
+        <li>
+            <ul id="edit-list" class="list">
+                <li id="edit-noun" class="data" data-path="noun" data-type="slot" data-list="0" contenteditable="true">
+                    名詞</li>
+                <li id="edit-part" class="data" data-path="part" data-type="slot" data-list="0" contenteditable="true">
+                    助詞</li>
+                <li id="edit-verb" class="data" data-path="verb" data-type="slot" data-list="0" contenteditable="true">
+                    動詞</li>
+            </ul>
+        </li>
+        <li>
+            <ul id="keep-list">
+                <li>
+                    <h3>FAV NOUN</h3>
+                    <ul id="keep-noun" class="list">
+                    </ul>
+                </li>
+                <li>
+                    <h3>FAV PART</h3>
+                    <ul id="keep-part" class="list">
+                    </ul>
+                </li>
+                <li>
+                    <h3>FAV VERB</h3>
+                    <ul id="keep-verb" class="list">
+                    </ul>
+                </li>
+                <li>
+                    <h3>SEARCH WORD</h3>
+                    <ul id="search" class="list">
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <dl>
+        <div>
+            <dt><span class="key">Enter</span></dt>
+            <dd><span>CHANGE THE WORD / USE THE FAVORITE WORD</span></dd>
+        </div>
+        <div>
+            <dt><span class="key">Delete</span></dt>
+            <dd><span>DELETE THE WORD</span></dd>
+        </div>
+        <div>
+            <dt><span class="key">E</span></dt>
+            <dd><span>EDIT THE WORD</span></dd>
+        </div>
+        <div>
+            <dt><span class="key">ESC</span></dt>
+            <dd><span>FINISH EDITING THE WORD </span></dd>
+        </div>
+        <div>
+            <dt><span class="key">K</span></dt>
+            <dd><span>ADD THE WORD TO FAVORITE</span></dd>
+        </div>
+        <div>
+            <dt><span class="key">S</span></dt>
+            <dd><span>SAVE THE SENTENCE</span></dd>
+        </div>
+        <div>
+            <dt><span class="key">N</span></dt>
+            <dd><span>RESET THE SELECTED WORD</span></dd>
+        </div>
+        <div>
+            <dt><span class="key">←</span><span class="key">→</span><span class="key">↑</span><span class="key">↓</span>
+            </dt>
+            <dd><span>ADVANCE TO THE NEXT WORD</span></dd>
+        </div>
+    </dl>
+    <div id="status"></div>
+    <script src="index.js"></script>
 </body>
+
 </html>
