@@ -33,18 +33,6 @@ node app.js
 
 The application will be available at `localhost:3000`.
 
-## Japanese Dictionaries
-
-The application uses three types of CSV dictionaries: `noun.csv`, `part.csv`, and `verb.csv`. Each of these files is composed of two columns:
-
-| Word | Reading |
-| ---- | ------- |
-| 単語 | たんご |
-
-- `noun.csv`: Contains nouns and their readings.
-- `part.csv`: Contains particles and their readings.
-- `verb.csv`: Contains verbs and their readings.
-
 ## Application Structure
 
 Reibun-Generator is composed of three main areas:
@@ -55,11 +43,11 @@ This is where you create Japanese example sentences. The sentences are composed 
 
 ### Favorites Area
 
-This area is for saving words from the Example Sentence Area. (Note that these are not saved to a database, so they will be lost when the browser is refreshed.) Words can be selected and used in the example sentences by pressing the K key.
+This area is for saving words from the Example Sentence Area. (Note that these are not saved to a database, so they will be lost when the browser is refreshed.) Words can be selected and used in the example sentences by pressing the `K`.
 
 ### Search Area
 
-This area displays potential word suggestions when editing a word in the Example Sentence Area. Selecting a word will reflect it in the example sentence.
+This area displays potential word suggestions when editing a word in the Example Sentence Area. Words can be selected and used in the example sentences by pressing the `K`.
 
 ## Usage
 
@@ -78,4 +66,10 @@ Reibun-Generator is designed to be used with a keyboard only, without the need f
 - `S` Save the sentence.
 - `Delete` Delete the selected word.
 
-This application emphasizes keyboard navigation for efficiency and ease of use.
+## Japanese Dictionaries
+
+The application uses CSV Japanese dictionaries:
+
+- [`noun.csv`](https://github.com/idutsu/reibun-generator/tree/main/csv/noun.csv): Contains nouns and their readings.
+- [`part.csv`](https://github.com/idutsu/reibun-generator/tree/main/csv/part.csv): Contains particles.
+- [`verb.csv`](https://github.com/idutsu/reibun-generator/tree/main/csv/verb.csv): Contains verbs and their readings.
