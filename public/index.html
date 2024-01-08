@@ -12,12 +12,12 @@
     <ul id="root">
         <li>
             <ul id="edit-list" class="list">
-                <li id="edit-noun" class="data" data-path="noun" data-type="slot" data-list="0" contenteditable="true">
-                    名詞</li>
-                <li id="edit-part" class="data" data-path="part" data-type="slot" data-list="0" contenteditable="true">
-                    助詞</li>
-                <li id="edit-verb" class="data" data-path="verb" data-type="slot" data-list="0" contenteditable="true">
-                    動詞</li>
+                <input type="text" value="" id="edit-noun" class="data" data-path="noun" data-type="slot"
+                    data-list="0" />
+                <input type="text" value="" id="edit-part" class="data" data-path="part" data-type="slot"
+                    data-list="0" />
+                <input type="text" value="" id="edit-verb" class="data" data-path="verb" data-type="slot"
+                    data-list="0" />
             </ul>
         </li>
         <li>
@@ -72,7 +72,15 @@
         </div>
         <div>
             <dt><span class="key">N</span></dt>
-            <dd><span>RESET THE SELECTED WORD</span></dd>
+            <dd><span>SELECT THE NOUN</span></dd>
+        </div>
+        <div>
+            <dt><span class="key">P</span></dt>
+            <dd><span>SELECT THE PARTICLE</span></dd>
+        </div>
+        <div>
+            <dt><span class="key">V</span></dt>
+            <dd><span>SELECT THE VERB</span></dd>
         </div>
         <div>
             <dt><span class="key">←</span><span class="key">→</span><span class="key">↑</span><span class="key">↓</span>

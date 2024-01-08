@@ -4,6 +4,7 @@
     color: #FFF;
 	font-weight: normal;
 	box-sizing: border-box;
+	outline: none;
 }
 
 html {
@@ -47,13 +48,24 @@ h3 {
 	margin-left: 75px;
 }
 
+input[type="text"] {
+    color: #FFF;
+    background: none;
+    border: none;
+	border-radius: 0;
+	outline: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
 .current {
-	color: #009900;
+	color: #009900 !important;
 }
 
 #edit-list {
 	display: flex;
-    font-size:3rem
+    font-size: 3rem;
 }
 
 #keep-list {

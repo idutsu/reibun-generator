@@ -24,8 +24,6 @@ const DATA_PATH_NOUN = "noun";
 const DATA_PATH_PART = "part";
 const DATA_PATH_VERB = "verb";
 
-let isComposing = false;
-
 function Controller() {
   this.currentDataIndex;
   this.currentData;
@@ -59,7 +57,6 @@ Controller.prototype._setCurrentData = function(element) {
 
 Controller.prototype.initCurrentData = function() {
   this._setCurrentData(EL_EDIT_NOUN);
-  // this._setCurrentDataClass();
 }
 
 Controller.prototype.getCurrentListIndex = function() {
@@ -144,7 +141,7 @@ Controller.prototype.deleteData = function() {
 }
 
 Controller.prototype.keepData = function() {
-  const text = this.currentData.innerText.replace(/^[\s\u3000]+|[\s\u3000]+$/g, '');
+  const text = this.currentData.value.replace(/^[\s\u3000]+|[\s\u3000]+$/g, '');
   if (text != "") {
     const path = this.getCurrentDataPath();
     const li = document.createElement('li');
@@ -176,13 +173,13 @@ Controller.prototype.useData = function() {
   const word = this.currentData.innerText;
   switch (path) {
     case DATA_PATH_NOUN:
-      EL_EDIT_NOUN.innerText = word;
+      EL_EDIT_NOUN.value = word;
       break;
     case DATA_PATH_PART:
-      EL_EDIT_PART.innerText = word;
+      EL_EDIT_PART.value = word;
       break;
     case DATA_PATH_VERB:
-      EL_EDIT_VERB.innerText = word;
+      EL_EDIT_VERB.value = word;
       break;
   }
 }
@@ -215,7 +212,7 @@ Controller.prototype.fetchRondomWordFromCsv = function(path) {
   fetch('/' + path)
     .then(response => response.text())
     .then(word => {
-      document.getElementById('edit-' + path).textContent = word;
+      document.getElementById('edit-' + path).value = word;
     })
     .catch(error => {
       console.error('Error fetching data:', error);
@@ -239,7 +236,8 @@ Controller.prototype.fetchSearchWordsFromCsv = function(input, path) {
           fragment.appendChild(li);
         });
         EL_SEARCH_LIST.appendChild(fragment);
-        controller._setCurrentData(EL_SEARCH_LIST.querySelector('li'));
+        // controller._setCurrentData(EL_SEARCH_LIST.querySelector('li'));
+      } else {
       }
     })
     .catch(error => console.error('Error:', error));
@@ -248,12 +246,13 @@ Controller.prototype.fetchSearchWordsFromCsv = function(input, path) {
 Controller.prototype.startEdit = function() {
   const element = this.currentData;
   element.focus();
-  const selection = window.getSelection();
-  const range = document.createRange();
-  range.selectNodeContents(element);
-  range.collapse(false);
-  selection.removeAllRanges();
-  selection.addRange(range);
+  EL_SEARCH_LIST.innerHTML = "";
+  // const selection = window.getSelection();
+  // const range = document.createRange();
+  // range.selectNodeContents(element);
+  // range.collapse(false);
+  // selection.removeAllRanges();
+  // selection.addRange(range);
 }
 
 Controller.prototype.endEdit = function() {
@@ -270,6 +269,7 @@ controller.fetchRondomWordFromCsv(DATA_PATH_VERB);
 
 const keysPressed = {};
 let isKeyPressed = false;
+let isComposing = false;
 
 document.addEventListener('keydown', function(event) {
 
@@ -304,19 +304,28 @@ document.addEventListener('keydown', function(event) {
           });
         }
       } else {
-        if (currentDataType == DATA_TYPE_SEARCH && currentData.nextElementSibling) {
-          controller.nextData();
-          currentData.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          });
+        if (currentDataType == DATA_TYPE_SLOT) {
+          const searchWord = EL_SEARCH_LIST.querySelector('li');
+          if (searchWord) {
+            controller.endEdit();
+            controller._setCurrentData(searchWord);
+          }
+        } else {
+          if (currentDataType == DATA_TYPE_SEARCH && currentData.nextElementSibling) {
+            event.preventDefault();
+            controller.nextData();
+            currentData.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            });
+          }
         }
       }
       break;
     case 'ArrowUp':
       if (!isEditing) {
         if (currentDataType != DATA_TYPE_SLOT) {
-          if (!controller.currentData.previousElementSibling) {
+          if (!currentData.previousElementSibling) {
             controller.initCurrentData();
           } else {
             controller.prevData();
@@ -361,11 +370,12 @@ document.addEventListener('keydown', function(event) {
           controller.fetchRondomWordFromCsv(path);
         }
       } else {
-        event.preventDefault();
-        if (currentDataType == DATA_TYPE_SEARCH && !isComposing) {
-          controller.useData();
-          controller.endEdit();
-        }
+        // event.preventDefault();
+        // controller.endEdit();
+        // if (currentDataType == DATA_TYPE_SEARCH && !isComposing) {
+        //   controller.useData();
+        //   controller.endEdit();
+        // }
       }
       break;
     case 'Delete':
@@ -401,7 +411,15 @@ document.addEventListener('keydown', function(event) {
       break;
     case 'n':
       if (isEditing) return;
-      controller.initCurrentData();
+      controller._setCurrentData(EL_EDIT_NOUN);
+      break;
+    case 'p':
+      if (isEditing) return;
+      controller._setCurrentData(EL_EDIT_PART);
+      break;
+    case 'v':
+      if (isEditing) return;
+      controller._setCurrentData(EL_EDIT_VERB);
       break;
   }
 
@@ -421,7 +439,7 @@ document.addEventListener('keyup', function(event) {
 
   element.addEventListener('compositionend', function(event) {
     isComposing = false;
-    const text = event.target.innerText;
+    const text = event.target.value;
     const path = event.target.dataset.path
     if (text.length > 0) {
       controller.fetchSearchWordsFromCsv(text, path);
@@ -430,7 +448,7 @@ document.addEventListener('keyup', function(event) {
 
   element.addEventListener('input', function(event) {
     if (!isComposing) {
-      const text = event.target.innerText;
+      const text = event.target.value;
       const path = event.target.dataset.path
       if (text.length > 0) {
         controller.fetchSearchWordsFromCsv(text, path);
