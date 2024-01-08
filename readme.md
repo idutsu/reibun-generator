@@ -23,11 +23,6 @@ cd reibun-generator
 npm install
 ```
 
-### Configure the application
-
-Modify the `config.js` file with the development CSV paths:
-
-
 ### Start the application
 
 Run the application using the following command:
@@ -37,7 +32,6 @@ node app.js
 ```
 
 The application will be available at `localhost:3000`.
-
 
 ## Japanese Dictionaries
 
@@ -51,6 +45,21 @@ The application uses three types of CSV dictionaries: `noun.csv`, `part.csv`, an
 - `part.csv`: Contains particles and their readings.
 - `verb.csv`: Contains verbs and their readings.
 
+## Application Structure
+
+Reibun-Generator is composed of three main areas:
+
+### Example Sentence Area
+
+This is where you create Japanese example sentences. The sentences are composed of three types of words: nouns, particles, and verbs. By randomly changing these words, you can create simple yet unexpected Japanese example sentences.
+
+### Favorites Area
+
+This area is for saving words from the Example Sentence Area. (Note that these are not saved to a database, so they will be lost when the browser is refreshed.) Words can be selected and used in the example sentences by pressing the K key.
+
+### Search Area
+
+This area displays potential word suggestions when editing a word in the Example Sentence Area. Selecting a word will reflect it in the example sentence.
 
 ## Usage
 
@@ -62,7 +71,7 @@ Reibun-Generator is designed to be used with a keyboard only, without the need f
     - If a word in the sentence is selected, replace it with a random word from the dictionary.
     - If a favorite word or a search word is selected, replace the word in the sentence with the selected one.
 - `K` Add the selected word in the sentence to favorites.
-- `E` 
+- `E`
     - If a word in the sentence is selected, edit that word.
     - While typing, the search words area shows potential matching words.
 - `ESC` Finish editing a word.
