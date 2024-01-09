@@ -66,12 +66,24 @@ Controller.prototype._setCurrentDataClass = function() {
 
 Controller.prototype.nextData = function() {
   const nextData = this.currentData.nextElementSibling;
-  if (nextData) this._setCurrentData(nextData);
+  if (nextData) {
+    this._setCurrentData(nextData);
+    nextData.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
 };
 
 Controller.prototype.prevData = function() {
   const prevData = this.currentData.previousElementSibling;
-  if (prevData) this._setCurrentData(prevData);
+  if (prevData) {
+    this._setCurrentData(prevData);
+    prevData.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
 }
 
 Controller.prototype.setCurrentList = function(element) {
