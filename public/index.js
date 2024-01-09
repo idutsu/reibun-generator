@@ -2,6 +2,9 @@ const EL_ROOT = document.getElementById("root");
 const EL_EDIT_NOUN = document.getElementById("edit-noun");
 const EL_EDIT_PART = document.getElementById("edit-part");
 const EL_EDIT_VERB = document.getElementById("edit-verb");
+const EL_CALC_NOUN = document.getElementById("calc-noun");
+const EL_CALC_PART = document.getElementById("calc-part");
+const EL_CALC_VERB = document.getElementById("calc-verb");
 const EL_KEEP_LIST_NOUN = document.getElementById("keep-noun");
 const EL_KEEP_LIST_PART = document.getElementById("keep-part");
 const EL_KEEP_LIST_VERB = document.getElementById("keep-verb");
@@ -10,7 +13,6 @@ const STATUS_BAR = document.getElementById('status');
 
 const CLASS_CURRENT_DATA = "current";
 const CLASS_DATA = "data";
-const CLASS_LIST = "list";
 
 const LIST_NUMBER_SLOT = 0;
 const LIST_NUMBER_KEEP_NOUN = 1;
@@ -25,20 +27,12 @@ const DATA_PATH_PART = "part";
 const DATA_PATH_VERB = "verb";
 
 function Controller() {
-  this.currentDataIndex;
   this.currentData;
-  this.lists = EL_ROOT.querySelectorAll("." + CLASS_LIST);
-
-  this.initCurrentData(EL_EDIT_NOUN);
+  this.resetCurrentData(EL_EDIT_NOUN)
 }
 
 Controller.prototype._getAllData = function() {
   return EL_ROOT.querySelectorAll("." + CLASS_DATA);
-}
-
-Controller.prototype._getDataIndex = function(element) {
-  const data = Array.from(this._getAllData());
-  return data.indexOf(element);
 }
 
 Controller.prototype.getCurrentDataType = function() {
@@ -51,11 +45,10 @@ Controller.prototype.getCurrentDataPath = function() {
 
 Controller.prototype._setCurrentData = function(element) {
   this.currentData = element;
-  this.currentDataIndex = this._getDataIndex(element);
   this._setCurrentDataClass();
 }
 
-Controller.prototype.initCurrentData = function() {
+Controller.prototype.resetCurrentData = function() {
   this._setCurrentData(EL_EDIT_NOUN);
 }
 
@@ -72,70 +65,34 @@ Controller.prototype._setCurrentDataClass = function() {
 }
 
 Controller.prototype.nextData = function() {
-  const nextDataIndex = this.currentDataIndex + 1;
-  const data = this._getAllData();
-  const nextData = data[nextDataIndex];
-  if (nextData) {
-    this._setCurrentData(nextData);
-  }
+  const nextData = this.currentData.nextElementSibling;
+  if (nextData) this._setCurrentData(nextData);
 };
 
 Controller.prototype.prevData = function() {
-  const prevDataIndex = this.currentDataIndex - 1;
-  const data = this._getAllData();
-  const prevData = data[prevDataIndex];
-  if (prevData) {
-    this._setCurrentData(prevData);
-  }
+  const prevData = this.currentData.previousElementSibling;
+  if (prevData) this._setCurrentData(prevData);
 }
 
-Controller.prototype.nextList = function(index) {
-  let currentListIndex = index !== undefined ? index : this.getCurrentListIndex();
-  let nextList;
-  let nextData = null;
-  while (!nextData && currentListIndex < this.lists.length - 1) {
-    currentListIndex++;
-    nextList = this.lists[currentListIndex];
-    if (nextList) {
-      nextData = nextList.querySelector('.' + CLASS_DATA);
-    }
-  }
-  if (nextData) {
-    this._setCurrentData(nextData);
-  }
+Controller.prototype.setCurrentList = function(element) {
+  const data = element.querySelector('.' + CLASS_DATA);
+  if (data) this._setCurrentData(data);
 }
 
-Controller.prototype.prevList = function(index) {
-  let currentListIndex = index !== undefined ? index : this.getCurrentListIndex();
-  let prevList;
-  let prevData = null;
-  while (!prevData && currentListIndex > 0) {
-    currentListIndex--;
-    prevList = this.lists[currentListIndex];
-    if (prevList) {
-      prevData = prevList.querySelector('.' + CLASS_DATA);
-    }
-  }
-  if (prevData) {
-    this._setCurrentData(prevData);
-  }
+Controller.prototype.deleteWordInSentence = function() {
+  this.currentData.value = "";
 }
 
 Controller.prototype.deleteData = function() {
   const prevData = this.currentData.previousElementSibling;
+  const nextData = this.currentData.nextElementSibling;
+  this.currentData.remove();
   if (prevData) {
-    this.currentData.remove();
     this._setCurrentData(prevData);
+  } else if (nextData) {
+    this._setCurrentData(nextData);
   } else {
-    const nextData = this.currentData.nextElementSibling;
-    if (nextData) {
-      this.currentData.remove();
-      this._setCurrentData(nextData);
-    } else {
-      index = this.getCurrentListIndex();
-      this.currentData.remove();
-      this.prevList(index);
-    }
+    this.resetCurrentData();
   }
   this.currentDdata = null;
 }
@@ -171,21 +128,24 @@ Controller.prototype.keepData = function() {
 Controller.prototype.useData = function() {
   const path = this.getCurrentDataPath();
   const word = this.currentData.innerText;
+  let input = null;
   switch (path) {
     case DATA_PATH_NOUN:
-      EL_EDIT_NOUN.value = word;
+      input = EL_EDIT_NOUN;
       break;
     case DATA_PATH_PART:
-      EL_EDIT_PART.value = word;
+      input = EL_EDIT_PART;
       break;
     case DATA_PATH_VERB:
-      EL_EDIT_VERB.value = word;
+      input = EL_EDIT_VERB;
       break;
   }
+  input.value = word;
+  this.calcInputTextWidth(input);
 }
 
 Controller.prototype.saveData = function() {
-  const saveData = EL_EDIT_NOUN.innerText + EL_EDIT_PART.innerText + EL_EDIT_VERB.innerText;
+  const saveData = EL_EDIT_NOUN.value + EL_EDIT_PART.value + EL_EDIT_VERB.value;
   fetch('/save', {
     method: 'POST',
     headers: {
@@ -208,11 +168,13 @@ Controller.prototype.saveData = function() {
     });
 }
 
-Controller.prototype.fetchRondomWordFromCsv = function(path) {
+Controller.prototype.fetchRandomWordFromCsv = function(path) {
   fetch('/' + path)
     .then(response => response.text())
     .then(word => {
-      document.getElementById('edit-' + path).value = word;
+      const input = document.getElementById('edit-' + path);
+      input.value = word;
+      this.calcInputTextWidth(input);
     })
     .catch(error => {
       console.error('Error fetching data:', error);
@@ -236,7 +198,6 @@ Controller.prototype.fetchSearchWordsFromCsv = function(input, path) {
           fragment.appendChild(li);
         });
         EL_SEARCH_LIST.appendChild(fragment);
-        // controller._setCurrentData(EL_SEARCH_LIST.querySelector('li'));
       } else {
       }
     })
@@ -247,12 +208,6 @@ Controller.prototype.startEdit = function() {
   const element = this.currentData;
   element.focus();
   EL_SEARCH_LIST.innerHTML = "";
-  // const selection = window.getSelection();
-  // const range = document.createRange();
-  // range.selectNodeContents(element);
-  // range.collapse(false);
-  // selection.removeAllRanges();
-  // selection.addRange(range);
 }
 
 Controller.prototype.endEdit = function() {
@@ -261,11 +216,21 @@ Controller.prototype.endEdit = function() {
   });
 }
 
+Controller.prototype.calcInputTextWidth = function(input) {
+  const calcId = "calc-" + input.dataset.path;
+  const calc = document.getElementById(calcId);
+  calc.textContent = input.value;
+  calc.style.display = 'inline';
+  const width = calc.offsetWidth;
+  calc.style.display = 'none';
+  input.style.width = width + 'px';
+}
+
 
 let controller = new Controller();
-controller.fetchRondomWordFromCsv(DATA_PATH_NOUN);
-controller.fetchRondomWordFromCsv(DATA_PATH_PART);
-controller.fetchRondomWordFromCsv(DATA_PATH_VERB);
+controller.fetchRandomWordFromCsv(DATA_PATH_NOUN);
+controller.fetchRandomWordFromCsv(DATA_PATH_PART);
+controller.fetchRandomWordFromCsv(DATA_PATH_VERB);
 
 const keysPressed = {};
 let isKeyPressed = false;
@@ -279,7 +244,6 @@ document.addEventListener('keydown', function(event) {
 
   let currentData = controller.currentData;
   let currentDataType = controller.getCurrentDataType();
-
   let isEditing = false;
   let isEditingCurrentData = false;
 
@@ -293,99 +257,31 @@ document.addEventListener('keydown', function(event) {
 
   switch (event.key) {
     case 'ArrowDown':
-      if (!isEditing) {
-        if (currentDataType == DATA_TYPE_SLOT) {
-          controller.nextList();
-        } else {
-          controller.nextData();
-          currentData.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          });
-        }
-      } else {
-        if (currentDataType == DATA_TYPE_SLOT) {
-          const searchWord = EL_SEARCH_LIST.querySelector('li');
-          if (searchWord) {
-            controller.endEdit();
-            controller._setCurrentData(searchWord);
-          }
-        } else {
-          if (currentDataType == DATA_TYPE_SEARCH && currentData.nextElementSibling) {
-            event.preventDefault();
-            controller.nextData();
-            currentData.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center'
-            });
-          }
-        }
-      }
+      if (isEditing) return;
+      if (currentData.nextElementSibling) controller.nextData();
       break;
     case 'ArrowUp':
-      if (!isEditing) {
-        if (currentDataType != DATA_TYPE_SLOT) {
-          if (!currentData.previousElementSibling) {
-            controller.initCurrentData();
-          } else {
-            controller.prevData();
-            currentData.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center'
-            });
-          }
-        }
-      } else {
-        if (currentDataType == DATA_TYPE_SEARCH && currentData.previousElementSibling) {
-          controller.prevData();
-          currentData.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          });
-        }
-      }
-      break;
-    case 'ArrowRight':
       if (isEditing) return;
-      if (currentDataType == DATA_TYPE_SLOT) {
-        controller.nextData();
-      } else {
-        controller.nextList();
-      }
-      break;
-    case 'ArrowLeft':
-      if (isEditing) return;
-      if (currentDataType == DATA_TYPE_SLOT) {
-        controller.prevData();
-      } else {
-        controller.prevList();
-      }
+      if (currentData.previousElementSibling) controller.prevData();
       break;
     case 'Enter':
-      if (!isEditing) {
-        if (currentDataType == DATA_TYPE_KEEP || currentDataType == DATA_TYPE_SEARCH) {
-          controller.useData();
-        } else if (currentDataType == DATA_TYPE_SLOT) {
-          const path = controller.getCurrentDataPath();
-          controller.fetchRondomWordFromCsv(path);
-        }
-      } else {
-        // event.preventDefault();
-        // controller.endEdit();
-        // if (currentDataType == DATA_TYPE_SEARCH && !isComposing) {
-        //   controller.useData();
-        //   controller.endEdit();
-        // }
+      if (isEditing) return;
+      if (currentDataType == DATA_TYPE_KEEP || currentDataType == DATA_TYPE_SEARCH) {
+        controller.useData();
+      } else if (currentDataType == DATA_TYPE_SLOT) {
+        const path = controller.getCurrentDataPath();
+        controller.fetchRandomWordFromCsv(path);
       }
       break;
     case 'Delete':
-      if (currentDataType == DATA_TYPE_SLOT && !isEditing) {
-        controller.currentData.innerText = "";
+      if (isEditing) return;
+      if (currentDataType == DATA_TYPE_SLOT) {
+        controller.deleteWordInSentence();
       } else {
         controller.deleteData();
       }
       break;
-    case 's':
+    case 'p':
       if (isEditing) return;
       controller.saveData();
       break;
@@ -405,24 +301,37 @@ document.addEventListener('keydown', function(event) {
     case 'k':
       if (isEditing) return;
       currentDataType = controller.getCurrentDataType();
-      if (currentDataType == DATA_TYPE_SLOT) {
-        controller.keepData();
-      }
+      if (currentDataType == DATA_TYPE_SLOT) controller.keepData();
       break;
-    case 'n':
+    case 'a':
       if (isEditing) return;
       controller._setCurrentData(EL_EDIT_NOUN);
       break;
-    case 'p':
+    case 's':
       if (isEditing) return;
       controller._setCurrentData(EL_EDIT_PART);
       break;
-    case 'v':
+    case 'd':
       if (isEditing) return;
       controller._setCurrentData(EL_EDIT_VERB);
       break;
+    case 'z':
+      if (isEditing) return;
+      controller.setCurrentList(EL_KEEP_LIST_NOUN);
+      break;
+    case 'x':
+      if (isEditing) return;
+      controller.setCurrentList(EL_KEEP_LIST_PART);
+      break;
+    case 'c':
+      if (isEditing) return;
+      controller.setCurrentList(EL_KEEP_LIST_VERB);
+      break;
+    case 'v':
+      if (isEditing) return;
+      controller.setCurrentList(EL_SEARCH_LIST);
+      break;
   }
-
   isKeyPressed = true;
 });
 
@@ -447,6 +356,7 @@ document.addEventListener('keyup', function(event) {
   });
 
   element.addEventListener('input', function(event) {
+    controller.calcInputTextWidth(this);
     if (!isComposing) {
       const text = event.target.value;
       const path = event.target.dataset.path

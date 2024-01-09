@@ -11,35 +11,30 @@
     <h1>REIBUN GENERATOR 1.0.0</h1>
     <ul id="root">
         <li>
-            <ul id="edit-list" class="list">
-                <input type="text" value="" id="edit-noun" class="data" data-path="noun" data-type="slot"
-                    data-list="0" />
-                <input type="text" value="" id="edit-part" class="data" data-path="part" data-type="slot"
-                    data-list="0" />
-                <input type="text" value="" id="edit-verb" class="data" data-path="verb" data-type="slot"
-                    data-list="0" />
-            </ul>
+            <input type="text" value="" id="edit-noun" class="data" data-path="noun" data-type="slot" data-list="0" />
+            <input type="text" value="" id="edit-part" class="data" data-path="part" data-type="slot" data-list="0" />
+            <input type="text" value="" id="edit-verb" class="data" data-path="verb" data-type="slot" data-list="0" />
         </li>
         <li>
-            <ul id="keep-list">
-                <li>
+            <ul>
+                <li id="area-keep-noun" class="list">
                     <h3>NOUN</h3>
-                    <ul id="keep-noun" class="list">
+                    <ul id="keep-noun">
                     </ul>
                 </li>
-                <li>
+                <li id="area-keep-part" class="list">
                     <h3>PARTICLE</h3>
-                    <ul id="keep-part" class="list">
+                    <ul id="keep-part">
                     </ul>
                 </li>
-                <li>
+                <li id="area-keep-verb" class="list">
                     <h3>VERB</h3>
-                    <ul id="keep-verb" class="list">
+                    <ul id="keep-verb">
                     </ul>
                 </li>
-                <li>
+                <li id="area-search" class="list">
                     <h3>SEARCH</h3>
-                    <ul id="search" class="list">
+                    <ul id="search">
                     </ul>
                 </li>
             </ul>
@@ -56,7 +51,7 @@
         </div>
         <div>
             <dt><span class="key">E</span></dt>
-            <dd><span>EDIT THE WORD</span></dd>
+            <dd><span>START EDITING THE WORD</span></dd>
         </div>
         <div>
             <dt><span class="key">ESC</span></dt>
@@ -67,28 +62,47 @@
             <dd><span>ADD THE WORD TO FAVORITE</span></dd>
         </div>
         <div>
-            <dt><span class="key">S</span></dt>
+            <dt><span class="key">P</span></dt>
             <dd><span>SAVE THE SENTENCE</span></dd>
         </div>
         <div>
-            <dt><span class="key">N</span></dt>
+            <dt><span class="key">A</span></dt>
             <dd><span>SELECT THE NOUN</span></dd>
         </div>
         <div>
-            <dt><span class="key">P</span></dt>
+            <dt><span class="key">S</span></dt>
             <dd><span>SELECT THE PARTICLE</span></dd>
         </div>
         <div>
-            <dt><span class="key">V</span></dt>
+            <dt><span class="key">D</span></dt>
             <dd><span>SELECT THE VERB</span></dd>
         </div>
         <div>
-            <dt><span class="key">←</span><span class="key">→</span><span class="key">↑</span><span class="key">↓</span>
+            <dt><span class="key">Z</span></dt>
+            <dd><span>SELECT THE FAVORITE NOUNS</span></dd>
+        </div>
+        <div>
+            <dt><span class="key">X</span></dt>
+            <dd><span>SELECT THE FAVORITE PARTICLES</span></dd>
+        </div>
+        <div>
+            <dt><span class="key">C</span></dt>
+            <dd><span>SELECT THE FAVORITE VERBS</span></dd>
+        </div>
+        <div>
+            <dt><span class="key">V</span></dt>
+            <dd><span>SELECT THE SEARCH WORDS</span></dd>
+        </div>
+        <div>
+            <dt><span class="key">↑</span><span class="key">↓</span>
             </dt>
             <dd><span>ADVANCE TO THE NEXT WORD</span></dd>
         </div>
     </dl>
     <div id="status"></div>
+    <span id="calc-noun" class="calc" style="display: none; white-space: pre;"></span>
+    <span id="calc-part" class="calc" style="display: none; white-space: pre;"></span>
+    <span id="calc-verb" class="calc" style="display: none; white-space: pre;"></span>
     <script src="index.js"></script>
 </body>
 
