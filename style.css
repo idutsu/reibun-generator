@@ -20,12 +20,17 @@ body {
 	overflow-y: hidden;
 }
 
+a, a:visited, a:hover, {
+    color: inhert;
+    text-decoraton: none;
+}
+
 ul {
 	list-style-type: none;
 }
 
 h1 {
-	display:inline-block;
+	display: inline-block;
 	height: 30px;
 	line-height: 30px;
 	font-size: 1.2rem;
@@ -34,7 +39,6 @@ h1 {
 	background-color: #FFF;
 	padding: 0 .5em;
 	border-radius: 1px;
-	margin-bottom: 1rem;
 }
 
 h3 {
@@ -51,6 +55,8 @@ h3 {
 
 input[type="text"],
 .calc{
+    height:90px;
+    line-height:9   0px;
     font-size: 3rem;
     color: #FFF;
     background: none;
@@ -60,67 +66,56 @@ input[type="text"],
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
-	margin-bottom: 1rem;
 }
 
 .current {
 	color: #009900 !important;
 }
 
-.list{
-    position: absolute;
-	right: calc(250px + 2rem);
+#left-area{
+    display: inline-block;
+    position: relative;
+    z-index: 9999;
+    background-color: #222;
 }
 
-#area-keep-noun {
+#reibun-area {
+}
+
+#keep-area,
+#search-area,
+#save-area {
+    position:absolute;
     top:1rem;
+    width:250px;
 }
 
-#area-keep-part {
-    top: calc(200px + 2rem);
+#keep-area {
+    right:calc(250px + 2rem);
 }
 
-#area-keep-verb {
-    top: calc(400px + 3rem);
-}
-
-.list ul {
-	width: 250px;
-    height: 200px;
-    overflow-y: auto;
-	border: 1px solid #FFF;
-	padding: 1rem;
-	margin-right: 1rem;
-	margin-top: -15px;
-}
-
-#area-search {
-    position: absolute;
+#search-area {
     right:1rem;
-    top:1rem;
 }
 
-#area-search ul {
-    height: calc(600px + 2rem);
+#save-area {
+    right:calc(500px + 3rem);
 }
 
-#status {
-	display: none;
-	position:absolute;
-	top: 0;
-	left: 0;
-	z-index: 9999;
-	width: 100%;
-	height: 30px;
-	line-height: 30px;
-	text-align: center;
-	background-color: #009900;
+.list {
+    border: 1px solid #FFF;
+    height:156px;
+    margin-top: -15px;
+    padding: 1rem;
+    overflow-y: auto;
 }
 
-dl {
+#search-area .list,
+#save-area .list {
+    height:500px;
 }
 
-dl > div {
+#usage-area > div {
 	display:flex;
 	margin-bottom: 0.75rem;
 }
@@ -145,4 +140,11 @@ dd {
 	padding-left: 5px;
 	padding-right: 5px;
 	margin-right: 5px;
+}
+
+#copy {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    font-size:.9rem;
 }

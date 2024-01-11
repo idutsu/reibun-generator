@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css" />
+    <title>REIBUN GENERATOR</title>
+</head>
+
+<body>
+    <div id="left-area">
+        <h1>REIBUN GENERATOR 1.0.0</h1>
+        <div id="reibun-area">
+            <input type="text" value="" id="edit-noun" class="data" data-path="noun" data-type="slot"
+                data-list="0" /><input type="text" value="" id="edit-part" class="data" data-path="part"
+                data-type="slot" data-list="0" /><input type="text" value="" id="edit-verb" class="data"
+                data-path="verb" data-type="slot" data-list="0" />
+        </div>
+        <dl id="usage-area">
+            <div>
+                <dt><span class="key">Enter</span></dt>
+                <dd><span>CHANGE THE WORD / USE THE WORD</span></dd>
+            </div>
+            <div>
+                <dt><span class="key">D</span></dt>
+                <dd><span>DELETE THE WORD</span></dd>
+            </div>
+            <div>
+                <dt><span class="key">E</span></dt>
+                <dd><span>START EDITING THE WORD</span></dd>
+            </div>
+            <div>
+                <dt><span class="key">Escape</span></dt>
+                <dd><span>FINISH EDITING THE WORD </span></dd>
+            </div>
+            <div>
+                <dt><span class="key">K</span></dt>
+                <dd><span>ADD THE WORD TO FAVORITE</span></dd>
+            </div>
+            <div>
+                <dt><span class="key">SPACE</span></dt>
+                <dd><span>SAVE THE REIBUN</span></dd>
+            </div>
+            <div>
+                <dt><span class="key">F</span></dt>
+                <dd><span>SWITCH THE WORD IN REIBUN</span></dd>
+            </div>
+            <div>
+                <dt><span class="key">N</span></dt>
+                <dd><span>SELECT THE FAVORITE NOUN</span></dd>
+            </div>
+            <div>
+                <dt><span class="key">P</span></dt>
+                <dd><span>SELECT THE FAVORITE PARTICLE</span></dd>
+            </div>
+            <div>
+                <dt><span class="key">V</span></dt>
+                <dd><span>SELECT THE FAVORITE VERB</span></dd>
+            </div>
+            <div>
+                <dt><span class="key">S</span></dt>
+                <dd><span>SELECT THE SEARCH WORD</span></dd>
+            </div>
+            <div>
+                <dt><span class="key">R</span></dt>
+                <dd><span>SELECT THE SAVED REIBUN</span></dd>
+            </div>
+            <div>
+                <dt><span class="key">↑</span><span class="key">↓</span>
+                </dt>
+                <dd><span>SELECT THE WORD IN THE LIST</span></dd>
+            </div>
+        </dl>
+    </div>
+    <ul id="keep-area">
+        <li>
+            <h3>NOUN</h3>
+            <ul id="keep-noun" class="list">
+            </ul>
+        </li>
+        <li>
+            <h3>PARTICLE</h3>
+            <ul id="keep-part" class="list">
+            </ul>
+        </li>
+        <li>
+            <h3>VERB</h3>
+            <ul id="keep-verb" class="list">
+            </ul>
+        </li>
+    </ul>
+    <div id="search-area">
+        <h3>SEARCH</h3>
+        <ul id="search" class="list">
+        </ul>
+    </div>
+    <div id="save-area">
+        <h3>REIBUN</h3>
+        <ul id="reibun" class="list">
+        </ul>
+    </div>
+    <span id="calc-noun" class="calc" style="display: none; white-space: pre;"></span>
+    <span id="calc-part" class="calc" style="display: none; white-space: pre;"></span>
+    <span id="calc-verb" class="calc" style="display: none; white-space: pre;"></span>
+    <p id="copy"><a href="https://github.com/idutsu/reibun-generator/tree/main" target="_blank">(C) REIBUN
+            GENERATOR</a>
+    </p>
+    <script src="index.js"></script>
+</body>
+
+</html>
