@@ -11,7 +11,7 @@ const EL_SEARCH_LIST = document.getElementById("search");
 const EL_REIBUN_LIST = document.getElementById("reibun");
 const CLASS_CURRENT_DATA = "selected";
 const CLASS_DATA = "data";
-const DATA_TYPE_SLOT = "slot";
+const DATA_TYPE_EDIT = "edit";
 const DATA_TYPE_KEEP = "keep";
 const DATA_TYPE_SEARCH = "search";
 const DATA_TYPE_REIBUN = "reibun";
@@ -111,6 +111,13 @@ Controller.prototype.setCurrentData = function(element) {
   this.currentData = element;
   this.currentData.classList.add(CLASS_CURRENT_DATA);
   return this.currentData;
+}
+
+Controller.prototype.setCurrentDataFromPathAndType = function(path, type) {
+  const element = document.getElementById(type + '-' + path);
+  console.log(type);
+
+  this.setCurrentData(element);
 }
 
 Controller.prototype.resetCurrentData = function() {
@@ -284,6 +291,7 @@ document.addEventListener('keydown', function(event) {
 
   let currentData = controller.currentData;
   let currentDataType = currentData.dataset.type;
+  let currentDataPath = currentData.dataset.path;
   let isEditing = false;
   let isEditingCurrentData = false;
 
@@ -297,25 +305,57 @@ document.addEventListener('keydown', function(event) {
 
   switch (event.key) {
     case 'ArrowDown':
-      if (isEditing || currentDataType == DATA_TYPE_SLOT) return;
-      if (currentData.nextElementSibling) controller.nextData();
+      if(isEditing) {
+        event.preventDefault();
+        if (EL_SEARCH_LIST.querySelector('li') && !isComposing) {
+          if (currentDataType == DATA_TYPE_EDIT) {
+            controller.setCurrentList(EL_SEARCH_LIST);
+          } else if (currentDataType == DATA_TYPE_SEARCH) {
+            controller.nextData();
+          }
+        }
+      } else {
+        if (currentDataType != DATA_TYPE_EDIT) {
+          if (currentData.nextElementSibling) controller.nextData();
+        }
+      }
       break;
     case 'ArrowUp':
-      if (isEditing || currentDataType == DATA_TYPE_SLOT) return;
-      if (currentData.previousElementSibling) controller.prevData();
+      if(isEditing) {
+        event.preventDefault();
+        if (currentDataType == DATA_TYPE_SEARCH) {
+          if (currentData == EL_SEARCH_LIST.querySelector('li')) {
+            controller.setCurrentDataFromPathAndType(currentDataPath, DATA_TYPE_EDIT);
+          } else {
+            controller.prevData();
+          }
+        }
+      } else {
+        if (currentDataType != DATA_TYPE_EDIT) {
+          if (currentData.nextElementSibling) controller.nextData();
+        }
+      }
       break;
     case 'Enter':
-      if (isEditing) return;
-      if (currentDataType == DATA_TYPE_KEEP || currentDataType == DATA_TYPE_SEARCH) {
-        controller.useData();
-      } else if (currentDataType == DATA_TYPE_SLOT) {
-        const path = currentData.dataset.path;
-        controller.getRandomWordFromCsv(path);
+      if (isEditing) {
+        if (currentDataType == DATA_TYPE_SEARCH) {
+          controller.useData();
+          controller.endEdit();
+          controller.setCurrentDataFromPathAndType(currentDataPath, DATA_TYPE_EDIT);
+          EL_SEARCH_LIST.innerHTML = "";
+        }
+      } else {
+        if (currentDataType == DATA_TYPE_KEEP || currentDataType == DATA_TYPE_SEARCH) {
+          controller.useData();
+        } else if (currentDataType == DATA_TYPE_EDIT) {
+          const path = currentData.dataset.path;
+          controller.getRandomWordFromCsv(path);
+        }  
       }
       break;
     case 'd':
       if (isEditing) return;
-      if (currentDataType == DATA_TYPE_SLOT) {
+      if (currentDataType == DATA_TYPE_EDIT) {
         controller.deleteWordInSentence();
       } else if (currentDataType == DATA_TYPE_REIBUN) {
         controller.deleteReibun().then(() => controller.deleteData());
@@ -329,7 +369,7 @@ document.addEventListener('keydown', function(event) {
       break;
     case 'e':
       if (isEditing && isEditingCurrentData) return;
-      if (currentDataType == DATA_TYPE_SLOT) {
+      if (currentDataType == DATA_TYPE_EDIT) {
         event.preventDefault();
         controller.startEdit();
         isEditing = true;
@@ -342,7 +382,7 @@ document.addEventListener('keydown', function(event) {
       break;
     case 'k':
       if (isEditing) return;
-      if (currentDataType == DATA_TYPE_SLOT) controller.keepData();
+      if (currentDataType == DATA_TYPE_EDIT) controller.keepData();
       break;
     case 'n':
       if (isEditing) return;
@@ -366,7 +406,7 @@ document.addEventListener('keydown', function(event) {
       break;
     case 'f':
       if (isEditing) return;
-      if (currentDataType == DATA_TYPE_SLOT) {
+      if (currentDataType == DATA_TYPE_EDIT) {
         if (currentData.nextElementSibling) {
           controller.nextData();
         } else {
