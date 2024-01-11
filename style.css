@@ -68,7 +68,7 @@ input[type="text"],
 	appearance: none;
 }
 
-.current {
+.selected {
 	color: #009900 !important;
 }
 
