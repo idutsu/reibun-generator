@@ -1,32 +1,262 @@
-const EL_EDIT_NOUN = document.getElementById("edit-noun");
-const EL_EDIT_PART = document.getElementById("edit-part");
-const EL_EDIT_VERB = document.getElementById("edit-verb");
-const EL_CALC_NOUN = document.getElementById("calc-noun");
-const EL_CALC_PART = document.getElementById("calc-part");
-const EL_CALC_VERB = document.getElementById("calc-verb");
-const EL_KEEP_LIST_NOUN = document.getElementById("keep-noun");
-const EL_KEEP_LIST_PART = document.getElementById("keep-part");
-const EL_KEEP_LIST_VERB = document.getElementById("keep-verb");
-const EL_SEARCH_LIST = document.getElementById("search");
-const EL_REIBUN_LIST = document.getElementById("reibun");
-const CLASS_CURRENT_DATA = "selected";
-const CLASS_DATA = "data";
-const DATA_TYPE_EDIT = "edit";
-const DATA_TYPE_KEEP = "keep";
-const DATA_TYPE_SEARCH = "search";
-const DATA_TYPE_REIBUN = "reibun";
-const DATA_PATH_NOUN = "noun";
-const DATA_PATH_PART = "part";
-const DATA_PATH_VERB = "verb";
 const DB = "ReibunDatabase";
 const DB_TABLE = "ReibunStore";
 const DB_VERSION = 1;
+const CL_WORD = "word";
+const PATH_NOUN = "noun";
+const PATH_PART = "part";
+const PATH_VERB = "verb";
+const TYPE_EDIT = "edit";
+const TYPE_KEEP = "keep";
+const TYPE_SEARCH = "search";
+const TYPE_REIBUN = "reibun";
+const CL_SELECTED = "selected";
+const ID_EDIT_NOUN ="edit-noun";
+const ID_EDIT_PART = "edit-part";
+const ID_EDIT_VERB = "edit-verb";
+const ID_KEEP_NOUN = "keep-noun";
+const ID_KEEP_PART = "keep-part";
+const ID_KEEP_VERB = "keep-verb";
+const ID_SEARCH = "search";
+const ID_REIBUN = "reibun";
+
 
 function Controller() {
-  this.currentData = null;
+  this.selectedWordIndex = 0;
   this.db = null;
   this.initDatabase().then(() => this.getReibun()).catch(error => console.error(error));
-  this.resetCurrentData();
+  this.selectEditWord(PATH_NOUN);
+}
+
+Controller.prototype.selectWord = function(wordElement) {
+  const wordIndex = this._findWordIndex(wordElement);
+  this.selectedWordIndex = wordIndex;
+  const selectedWord = document.querySelector('.' + CL_SELECTED);
+  if (selectedWord) selectedWord.classList.remove(CL_SELECTED); 
+  wordElement.classList.add(CL_SELECTED);
+}
+
+Controller.prototype.selectWordByIndex = function(wordIndex) {
+  this.selectedWordIndex = wordIndex;
+  const selectedWord = document.querySelector('.' + CL_SELECTED);
+  if (selectedWord) selectedWord.classList.remove(CL_SELECTED); 
+  const AllWordElements = this._findAllWordElements(); 
+  AllWordElements[wordIndex].classList.add(CL_SELECTED);  
+}
+
+Controller.prototype.selectEditWord = function(path) {
+  let index = 0;
+  switch (path) {
+    case PATH_NOUN:
+      index = 0;
+      break;
+    case PATH_PART:
+      index = 1;
+      break;
+    case PATH_VERB:
+      index = 2;
+      break;
+  }
+  this.selectWordByIndex(index);
+}
+
+Controller.prototype.selectNextWord = function() {
+  const selectedWordElement =  this._getSelectedWordElement();
+  const nextWordElement = selectedWordElement.nextElementSibling;
+  if (nextWordElement) {
+    this.selectedWordIndex += 1;
+    selectedWordElement.classList.remove(CL_SELECTED);
+    nextWordElement.classList.add(CL_SELECTED);
+    nextWordElement.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+}
+
+Controller.prototype.selectPrevWord = function() {
+  const selectedWordElement = this._getSelectedWordElement();
+  const prevWordElement = selectedWordElement.previousElementSibling;
+  if (prevWordElement) {
+    this.selectedWordIndex -= 1;
+    selectedWordElement.classList.remove(CL_SELECTED);
+    prevWordElement.classList.add(CL_SELECTED);
+    prevWordElement.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+}
+
+Controller.prototype.selectList = function(listId) {
+  const wordList = document.getElementById(listId);
+  const firstWordElement = wordList.querySelectorAll('.' + CL_WORD)[0];
+  if (firstWordElement) this.selectWord(firstWordElement);
+}
+
+Controller.prototype.saveWord = function() {
+  const selectedWordElement = this._getSelectedWordElement();
+  const selectedWordPath = selectedWordElement.dataset.path;
+  const selectedWordText = trim(selectedWordElement.value);
+  if (selectedWordText != "") {
+    const li = document.createElement('li');
+    li.classList.add(CL_WORD);
+    li.setAttribute('data-type', TYPE_KEEP);
+    li.innerText = eschtml(selectedWordText);
+    switch (selectedWordPath) {
+      case PATH_NOUN:
+        li.setAttribute('data-path', PATH_NOUN);
+        document.getElementById(ID_KEEP_NOUN).appendChild(li);
+        break;
+      case PATH_PART:
+        li.setAttribute('data-path', PATH_PART);
+        document.getElementById(ID_KEEP_PART).appendChild(li);
+        break;
+      case PATH_VERB:
+        li.setAttribute('data-path', PATH_VERB);
+        document.getElementById(ID_KEEP_VERB).appendChild(li);
+        break;
+    }
+  }
+}
+
+Controller.prototype.deleteWord = function() {
+  const selectedWordElement = this._getSelectedWordElement();
+  const prevWordElement = selectedWordElement.previousElementSibling;
+  const nextWordElement = selectedWordElement.nextElementSibling;
+  selectedWordElement.remove();
+  if (prevWordElement) {
+    this.selectWord(prevWordElement);
+  } else if (nextWordElement) {
+    this.selectWord(nextWordElement);
+  } else {
+    this.selectWord(document.getElementById(ID_EDIT_NOUN));
+  }
+}
+
+Controller.prototype.useWord = function() {
+  const selectedWordElement = this._getSelectedWordElement();
+  const selectedWordPath = selectedWordElement.dataset.path;
+  const selectedWordText = selectedWordElement.innerText;
+  const editWordElement = document.getElementById(TYPE_EDIT + '-' + selectedWordPath);
+  editWordElement.value = eschtml(selectedWordText);
+  calcInputTextWidth(editWordElement);
+}
+
+Controller.prototype.changeWord = function(path) {
+  const file = 'csv/' + path + '.csv';
+  fetch(file)
+    .then(response => response.text())
+    .then(text => {
+      const lines = text.split('\n');
+      const randomLine = lines[Math.floor(Math.random() * lines.length)];
+      const randomWord = randomLine.split(',')[0];
+      const wordElement = document.getElementById('edit-' + path);
+      wordElement.value = eschtml(randomWord);
+      calcInputTextWidth(wordElement);
+    })
+    .catch(error => console.error(error));
+}
+
+Controller.prototype.searchWords = function(path, searchWord) {
+  fetch('csv/' + path + '.csv')
+    .then(response => response.text())
+    .then(text => {
+      const lines = text.split('\n');
+      let results = [];
+      const katakanaSearch = searchWord.replace(/[\u3041-\u3096]/g, match => {
+        return String.fromCharCode(match.charCodeAt(0) + 0x60);
+      });
+      const hiraganaSearch = searchWord.replace(/[\u30A1-\u30F6]/g, match => {
+        return String.fromCharCode(match.charCodeAt(0) - 0x60);
+      });
+      lines.forEach(line => {
+        const [word, reading] = line.split(',');
+        if ((word && (word.startsWith(katakanaSearch) || word.startsWith(hiraganaSearch))) ||
+          (reading && (reading.startsWith(katakanaSearch) || reading.startsWith(hiraganaSearch)))) {
+          results.push(word);
+        }
+      });
+
+      const searchList = document.getElementById(ID_SEARCH);
+      searchList.innerHTML = '';
+
+      if (results.length > 0) {
+        const fragment = document.createDocumentFragment();
+        results.forEach(suggestion => {
+          const li = document.createElement('li');
+          li.classList.add(CL_WORD);
+          li.dataset.path = path;
+          li.dataset.type = TYPE_SEARCH;
+          li.textContent = eschtml(suggestion);
+          fragment.appendChild(li);
+        });
+
+        searchList.appendChild(fragment);
+      }
+    })
+    .catch(error => console.error(error));
+}
+
+Controller.prototype.editStart = function() {
+  const selectedWordElement = this._getSelectedWordElement();
+  selectedWordElement.focus();
+  document.getElementById(ID_SEARCH).innerHTML = "";
+}
+
+Controller.prototype.editEnd = function() {
+  document.activeElement.blur();
+}
+
+Controller.prototype.getReibun = function() {
+  return new Promise((resolve, reject) => {
+    const transaction = this.db.transaction(DB_TABLE, "readonly");
+    const store = transaction.objectStore(DB_TABLE);
+    const getRequest = store.openCursor();
+    document.getElementById(ID_REIBUN).innerHTML = '';
+
+    getRequest.onsuccess = (event) => {
+      const cursor = event.target.result;
+      if (cursor) {
+        createReibunListElement({ id: cursor.key, text: cursor.value });
+        cursor.continue();
+      }
+      resolve(cursor);
+    };
+    getRequest.onerror = (event) => {
+      reject(event.target.errorCode);
+    };
+  });
+}
+
+Controller.prototype.saveReibun = function() {
+  return new Promise((resolve, reject) => {
+
+    const text = trim(document.getElementById(ID_EDIT_NOUN).value) + trim(document.getElementById(ID_EDIT_PART).value) + trim(document.getElementById(ID_EDIT_VERB).value);
+    const transaction = this.db.transaction(DB_TABLE, "readwrite");
+    const store = transaction.objectStore(DB_TABLE);
+    const addRequest = store.add(text);
+
+    addRequest.onsuccess = (event) => {
+      resolve({ id: event.target.result, text: text });
+    };
+
+    addRequest.onerror = (event) => {
+      reject(event.target.errorCode);
+    };
+  });
+}
+
+Controller.prototype.deleteReibun = function() {
+  return new Promise((resolve, reject) => {
+    const selectedWordElement = this._getSelectedWordElement();
+    const transaction = this.db.transaction(DB_TABLE, "readwrite");
+    const store = transaction.objectStore(DB_TABLE);
+    const reibunId = Number(selectedWordElement.dataset.id);
+    const reibunText = selectedWordElement.textContent;
+    const deleteRequest = store.delete(reibunId);
+
+    deleteRequest.onsuccess = () => {
+      resolve({ id: reibunId, text: reibunText });
+    };
+
+    deleteRequest.onerror = (event) => {
+      reject(event.target.errorCode);
+    };
+  });
 }
 
 Controller.prototype.initDatabase = function() {
@@ -49,239 +279,40 @@ Controller.prototype.initDatabase = function() {
   });
 }
 
-Controller.prototype.getReibun = function() {
-  return new Promise((resolve, reject) => {
-    const transaction = this.db.transaction(DB_TABLE, "readonly");
-    const store = transaction.objectStore(DB_TABLE);
-    const getRequest = store.openCursor();
-    EL_REIBUN_LIST.innerHTML = '';
-
-    getRequest.onsuccess = (event) => {
-      const cursor = event.target.result;
-      if (cursor) {
-        createReibunListElement({ id: cursor.key, text: cursor.value });
-        cursor.continue();
-      }
-      resolve(cursor);
-    };
-    getRequest.onerror = (event) => {
-      reject(event.target.errorCode);
-    };
-  });
+Controller.prototype._getSelectedWordElement = function() {
+  return document.querySelectorAll('.' + CL_WORD)[this.selectedWordIndex];
 }
 
-Controller.prototype.saveReibun = function() {
-  return new Promise((resolve, reject) => {
-    const text = trim(EL_EDIT_NOUN.value) + trim(EL_EDIT_PART.value) + trim(EL_EDIT_VERB.value);
-    const transaction = this.db.transaction(DB_TABLE, "readwrite");
-    const store = transaction.objectStore(DB_TABLE);
-    const addRequest = store.add(text);
-
-    addRequest.onsuccess = (event) => {
-      resolve({ id: event.target.result, text: text });
-    };
-
-    addRequest.onerror = (event) => {
-      reject(event.target.errorCode);
-    };
-  });
+Controller.prototype._findWordFromIndex = function(wordIndex) {
+  return document.querySelectorAll('.' + CL_WORD)[wordIndex];
 }
 
-Controller.prototype.deleteReibun = function() {
-  return new Promise((resolve, reject) => {
-
-    const transaction = this.db.transaction(DB_TABLE, "readwrite");
-    const store = transaction.objectStore(DB_TABLE);
-    const id = Number(this.currentData.dataset.id);
-    const text = this.currentData.textContent;
-    const deleteRequest = store.delete(id);
-
-    deleteRequest.onsuccess = () => {
-      resolve({ id: id, text: text });
-    };
-
-    deleteRequest.onerror = (event) => {
-      reject(event.target.errorCode);
-    };
-  });
+Controller.prototype._findAllWordElements = function() {
+  return document.querySelectorAll('.' + CL_WORD);
 }
 
-Controller.prototype.setCurrentData = function(element) {
-  if (this.currentData) this.currentData.classList.remove(CLASS_CURRENT_DATA);
-  this.currentData = element;
-  this.currentData.classList.add(CLASS_CURRENT_DATA);
-  return this.currentData;
+Controller.prototype._findWordIndex = function(wordElement) {
+  const AllWordElements = this._findAllWordElements();
+  const AllWordElementsArray = Array.from(AllWordElements);
+  return AllWordElementsArray.indexOf(wordElement);
 }
 
-Controller.prototype.setCurrentDataFromPathAndType = function(path, type) {
-  const element = document.getElementById(type + '-' + path);
-  console.log(type);
 
-  this.setCurrentData(element);
-}
-
-Controller.prototype.resetCurrentData = function() {
-  this.setCurrentData(EL_EDIT_NOUN);
-}
-
-Controller.prototype.nextData = function() {
-  const nextData = this.currentData.nextElementSibling;
-  if (nextData) {
-    this.setCurrentData(nextData).scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
-  }
-};
-
-Controller.prototype.prevData = function() {
-  const prevData = this.currentData.previousElementSibling;
-  if (prevData) {
-    this.setCurrentData(prevData).scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
-  }
-}
-
-Controller.prototype.setCurrentList = function(element) {
-  const data = element.querySelector('.' + CLASS_DATA);
-  if (data) this.setCurrentData(data);
-}
-
-Controller.prototype.deleteWordInSentence = function() {
-  this.currentData.value = "";
-}
-
-Controller.prototype.deleteData = function() {
-  const prevData = this.currentData.previousElementSibling;
-  const nextData = this.currentData.nextElementSibling;
-  this.currentData.remove();
-  if (prevData) {
-    this.setCurrentData(prevData);
-  } else if (nextData) {
-    this.setCurrentData(nextData);
-  } else {
-    this.resetCurrentData();
-  }
-}
-
-Controller.prototype.keepData = function() {
-  const text = trim(this.currentData.value);
-  if (text != "") {
-    const path = this.currentData.dataset.path;
-    const li = document.createElement('li');
-    li.classList.add(CLASS_DATA);
-    li.setAttribute('data-type', DATA_TYPE_KEEP);
-    li.innerText = eschtml(text);
-    switch (path) {
-      case DATA_PATH_NOUN:
-        li.setAttribute('data-path', DATA_PATH_NOUN);
-        EL_KEEP_LIST_NOUN.appendChild(li);
-        break;
-      case DATA_PATH_PART:
-        li.setAttribute('data-path', DATA_PATH_PART);
-        EL_KEEP_LIST_PART.appendChild(li);
-        break;
-      case DATA_PATH_VERB:
-        li.setAttribute('data-path', DATA_PATH_VERB);
-        EL_KEEP_LIST_VERB.appendChild(li);
-        break;
-    }
-  }
-}
-
-Controller.prototype.useData = function() {
-  const path = this.currentData.dataset.path;
-  const word = this.currentData.innerText;
-  let input = null;
-  switch (path) {
-    case DATA_PATH_NOUN:
-      input = EL_EDIT_NOUN;
-      break;
-    case DATA_PATH_PART:
-      input = EL_EDIT_PART;
-      break;
-    case DATA_PATH_VERB:
-      input = EL_EDIT_VERB;
-      break;
-  }
-  input.value = word;
-  calcInputTextWidth(input);
-}
-
-Controller.prototype.getRandomWordFromCsv = function(path) {
-  const file = 'csv/' + path + '.csv';
-  fetch(file)
-    .then(response => response.text())
-    .then(text => {
-      const lines = text.split('\n');
-      const randomLine = lines[Math.floor(Math.random() * lines.length)];
-      const randomWord = randomLine.split(',')[0];
-      const input = document.getElementById('edit-' + path);
-      input.value = eschtml(randomWord);
-      calcInputTextWidth(input);
-    })
-    .catch(error => console.error(error));
-}
-
-Controller.prototype.getSearchWordsFromCsv = function(path, searchText) {
-  fetch('csv/' + path + '.csv')
-    .then(response => response.text())
-    .then(text => {
-      const lines = text.split('\n');
-      let results = [];
-      const katakanaSearch = searchText.replace(/[\u3041-\u3096]/g, match => {
-        return String.fromCharCode(match.charCodeAt(0) + 0x60);
-      });
-      const hiraganaSearch = searchText.replace(/[\u30A1-\u30F6]/g, match => {
-        return String.fromCharCode(match.charCodeAt(0) - 0x60);
-      });
-      lines.forEach(line => {
-        const [word, reading] = line.split(',');
-        if ((word && (word.startsWith(katakanaSearch) || word.startsWith(hiraganaSearch))) ||
-          (reading && (reading.startsWith(katakanaSearch) || reading.startsWith(hiraganaSearch)))) {
-          results.push(word);
-        }
-      });
-
-      EL_SEARCH_LIST.innerHTML = '';
-
-      if (results.length > 0) {
-        const fragment = document.createDocumentFragment();
-        results.forEach(suggestion => {
-          const li = document.createElement('li');
-          li.classList.add(CLASS_DATA);
-          li.dataset.path = path;
-          li.dataset.type = "search";
-          li.textContent = eschtml(suggestion);
-          fragment.appendChild(li);
-        });
-        EL_SEARCH_LIST.appendChild(fragment);
-      }
-    })
-    .catch(error => console.error(error));
-}
-
-Controller.prototype.startEdit = function() {
-  this.currentData.focus();
-  EL_SEARCH_LIST.innerHTML = "";
-}
-
-Controller.prototype.endEdit = function() {
-  [EL_EDIT_NOUN, EL_EDIT_PART, EL_EDIT_VERB].forEach(element => {
-    element.blur();
-  });
-}
 
 let controller = new Controller();
-controller.getRandomWordFromCsv(DATA_PATH_NOUN);
-controller.getRandomWordFromCsv(DATA_PATH_PART);
-controller.getRandomWordFromCsv(DATA_PATH_VERB);
+controller.changeWord(PATH_NOUN);
+controller.changeWord(PATH_PART);
+controller.changeWord(PATH_VERB);
 
 const keysPressed = {};
 let isKeyPressed = false;
 let isComposing = false;
+
+const EL_EDIT_NOUN = document.getElementById(ID_EDIT_NOUN);
+const EL_EDIT_PART = document.getElementById(ID_EDIT_PART);
+const EL_EDIT_VERB = document.getElementById(ID_EDIT_VERB);
+const EL_SEARCH =  document.getElementById(ID_SEARCH);
+const EL_REIBUN =  document.getElementById(ID_REIBUN);
 
 document.addEventListener('keydown', function(event) {
 
@@ -289,16 +320,17 @@ document.addEventListener('keydown', function(event) {
 
   keysPressed[event.key] = true;
 
-  let currentData = controller.currentData;
-  let currentDataType = currentData.dataset.type;
-  let currentDataPath = currentData.dataset.path;
+  const selectedWordElement = controller._getSelectedWordElement();
+  const selectedWordPath = selectedWordElement.dataset.path;
+  const selectedWordType = selectedWordElement.dataset.type;
+
   let isEditing = false;
   let isEditingCurrentData = false;
 
-  [EL_EDIT_NOUN, EL_EDIT_PART, EL_EDIT_VERB].forEach(element => {
+  [EL_EDIT_NOUN, EL_EDIT_NOUN, EL_EDIT_VERB].forEach(element => {
     if (document.activeElement == element) {
       isEditing = true;
-      if (element == currentData) isEditingCurrentData = true;
+      if (element == selectedWordElement) isEditingCurrentData = true;
       return false;
     }
   });
@@ -307,60 +339,59 @@ document.addEventListener('keydown', function(event) {
     case 'ArrowDown':
       if(isEditing) {
         event.preventDefault();
-        if (EL_SEARCH_LIST.querySelector('li') && !isComposing) {
-          if (currentDataType == DATA_TYPE_EDIT) {
-            controller.setCurrentList(EL_SEARCH_LIST);
-          } else if (currentDataType == DATA_TYPE_SEARCH) {
-            controller.nextData();
+        if (!isComposing) {
+          if (selectedWordType == TYPE_EDIT) {
+            controller.selectList(ID_SEARCH);
+          } else if (selectedWordType == TYPE_SEARCH) {
+            controller.selectNextWord();
           }
         }
       } else {
-        if (currentDataType != DATA_TYPE_EDIT) {
-          if (currentData.nextElementSibling) controller.nextData();
+        if (selectedWordType != TYPE_EDIT) {
+          if (selectedWordElement.nextElementSibling) controller.selectNextWord();
         }
       }
       break;
     case 'ArrowUp':
       if(isEditing) {
         event.preventDefault();
-        if (currentDataType == DATA_TYPE_SEARCH) {
-          if (currentData == EL_SEARCH_LIST.querySelector('li')) {
-            controller.setCurrentDataFromPathAndType(currentDataPath, DATA_TYPE_EDIT);
+        if (selectedWordType == TYPE_SEARCH) {
+          if (!selectedWordElement.previousElementSibling) {
+            controller.selectEditWord(selectedWordPath);
           } else {
-            controller.prevData();
+            controller.selectPrevWord();
           }
         }
       } else {
-        if (currentDataType != DATA_TYPE_EDIT) {
-          if (currentData.nextElementSibling) controller.nextData();
+        if (selectedWordType != TYPE_EDIT) {
+          if (selectedWordElement.previousElementSibling) controller.selectPrevWord();
         }
       }
       break;
     case 'Enter':
       if (isEditing) {
-        if (currentDataType == DATA_TYPE_SEARCH) {
-          controller.useData();
-          controller.endEdit();
-          controller.setCurrentDataFromPathAndType(currentDataPath, DATA_TYPE_EDIT);
-          EL_SEARCH_LIST.innerHTML = "";
+        if (selectedWordType == TYPE_SEARCH) {
+          controller.useWord();
+          controller.editEnd();
+          controller.selectEditWord(selectedWordPath);
+          EL_SEARCH.innerHTML = "";
         }
       } else {
-        if (currentDataType == DATA_TYPE_KEEP || currentDataType == DATA_TYPE_SEARCH) {
-          controller.useData();
-        } else if (currentDataType == DATA_TYPE_EDIT) {
-          const path = currentData.dataset.path;
-          controller.getRandomWordFromCsv(path);
+        if (selectedWordType == TYPE_KEEP || selectedWordType == TYPE_SEARCH) {
+          controller.useWord();
+        } else if (selectedWordType == TYPE_EDIT) {
+          controller.changeWord(selectedWordPath);
         }  
       }
       break;
     case 'd':
       if (isEditing) return;
-      if (currentDataType == DATA_TYPE_EDIT) {
-        controller.deleteWordInSentence();
-      } else if (currentDataType == DATA_TYPE_REIBUN) {
-        controller.deleteReibun().then(() => controller.deleteData());
+      if (selectedWordType == TYPE_EDIT) {
+        selectedWordElement.value == "";
+      } else if (selectedWordType == TYPE_REIBUN) {
+        controller.deleteReibun().then(() => controller.deleteWord());
       } else {
-        controller.deleteData();
+        controller.deleteWord();
       }
       break;
     case ' ':
@@ -369,51 +400,49 @@ document.addEventListener('keydown', function(event) {
       break;
     case 'e':
       if (isEditing && isEditingCurrentData) return;
-      if (currentDataType == DATA_TYPE_EDIT) {
+      if (selectedWordType == TYPE_EDIT) {
         event.preventDefault();
-        controller.startEdit();
+        controller.editStart();
         isEditing = true;
         isEditingCurrentData = true;
       }
       break;
     case 'Escape':
       if (!isEditing) return;
-      controller.endEdit();
+      controller.editEnd();
       break;
     case 'k':
       if (isEditing) return;
-      if (currentDataType == DATA_TYPE_EDIT) controller.keepData();
+      if (selectedWordType == TYPE_EDIT) controller.saveWord();
       break;
     case 'n':
       if (isEditing) return;
-      controller.setCurrentList(EL_KEEP_LIST_NOUN);
+      controller.selectList(ID_KEEP_NOUN);
       break;
     case 'p':
       if (isEditing) return;
-      controller.setCurrentList(EL_KEEP_LIST_PART);
+      controller.selectList(ID_KEEP_PART);
       break;
     case 'v':
       if (isEditing) return;
-      controller.setCurrentList(EL_KEEP_LIST_VERB);
+      controller.selectList(ID_KEEP_VERB);
       break;
     case 's':
       if (isEditing) return;
-      controller.setCurrentList(EL_SEARCH_LIST);
+      controller.selectList(ID_SEARCH);
       break;
     case 'r':
       if (isEditing) return;
-      controller.setCurrentList(EL_REIBUN_LIST);
+      controller.selectList(ID_REIBUN);
       break;
     case 'f':
       if (isEditing) return;
-      if (currentDataType == DATA_TYPE_EDIT) {
-        if (currentData.nextElementSibling) {
-          controller.nextData();
-        } else {
-          controller.resetCurrentData();
-        }
+      if (selectedWordType == TYPE_EDIT) {
+        if(selectedWordPath == PATH_NOUN) controller.selectEditWord(PATH_PART);
+        if(selectedWordPath == PATH_PART) controller.selectEditWord(PATH_VERB);
+        if(selectedWordPath == PATH_VERB) controller.selectEditWord(PATH_NOUN);
       } else {
-        controller.resetCurrentData();
+        controller.selectEditWord(PATH_NOUN);
       }
       break;
 
@@ -437,30 +466,29 @@ document.addEventListener('keyup', function(event) {
     const text = event.target.value;
     const path = event.target.dataset.path
     if (text.length > 0) {
-      controller.getSearchWordsFromCsv(path, text);
+      controller.searchWords(path, text);
     }
   });
 
   element.addEventListener('input', function(event) {
+    const selectedWordElement = controller._getSelectedWordElement();
+    const selectedWordPath = selectedWordElement.dataset.path;
+    const selectedWordType = selectedWordElement.dataset.type;
+    const text = event.target.value;
+    if (!isComposing) if (text.length > 0) controller.searchWords(selectedWordPath, text);
+    if (selectedWordType == TYPE_SEARCH) controller.selectEditWord(selectedWordPath);
+    if (!text) EL_SEARCH.innerHTML = "";
     calcInputTextWidth(this);
-    if (!isComposing) {
-      const text = event.target.value;
-      const path = event.target.dataset.path
-      if (text.length > 0) {
-        controller.getSearchWordsFromCsv(path, text);
-      }
-    }
-    if (!event.target.value) EL_SEARCH_LIST.innerHTML = "";
   });
 });
 
 function createReibunListElement(record) {
   const li = document.createElement("li");
-  li.classList.add(CLASS_DATA);
-  li.setAttribute('data-type', DATA_TYPE_REIBUN);
+  li.classList.add(CL_WORD);
+  li.setAttribute('data-type', TYPE_REIBUN);
   li.setAttribute('data-id', record.id);
   li.textContent = eschtml(record.text);
-  EL_REIBUN_LIST.prepend(li);
+  EL_REIBUN.prepend(li);
 }
 
 function calcInputTextWidth(input) {
