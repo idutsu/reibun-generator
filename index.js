@@ -144,7 +144,7 @@ Controller.prototype.changeWord = function(path) {
       const lines = text.split('\n');
       const randomLine = lines[Math.floor(Math.random() * lines.length)];
       const randomWord = randomLine.split(',')[0];
-      const wordElement = document.getElementById('edit-' + path);
+      const wordElement = document.getElementById(TYPE_EDIT + '-' + path);
       wordElement.value = eschtml(randomWord);
       calcInputTextWidth(wordElement);
     })
