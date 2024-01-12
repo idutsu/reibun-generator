@@ -28,7 +28,7 @@ function Controller() {
 }
 
 Controller.prototype.selectWord = function(wordElement) {
-  const wordIndex = this._findWordIndex(wordElement);
+  const wordIndex = this._getWordIndex(wordElement);
   this.selectedWordIndex = wordIndex;
   const selectedWord = document.querySelector('.' + CL_SELECTED);
   if (selectedWord) selectedWord.classList.remove(CL_SELECTED); 
@@ -291,7 +291,7 @@ Controller.prototype._findAllWordElements = function() {
   return document.querySelectorAll('.' + CL_WORD);
 }
 
-Controller.prototype._findWordIndex = function(wordElement) {
+Controller.prototype._getWordIndex = function(wordElement) {
   const AllWordElements = this._findAllWordElements();
   const AllWordElementsArray = Array.from(AllWordElements);
   return AllWordElementsArray.indexOf(wordElement);
@@ -307,6 +307,7 @@ controller.changeWord(PATH_VERB);
 const keysPressed = {};
 let isKeyPressed = false;
 let isComposing = false;
+let isEditing = false;
 
 const EL_EDIT_NOUN = document.getElementById(ID_EDIT_NOUN);
 const EL_EDIT_PART = document.getElementById(ID_EDIT_PART);
@@ -324,16 +325,7 @@ document.addEventListener('keydown', function(event) {
   const selectedWordPath = selectedWordElement.dataset.path;
   const selectedWordType = selectedWordElement.dataset.type;
 
-  let isEditing = false;
-  let isEditingCurrentData = false;
-
-  [EL_EDIT_NOUN, EL_EDIT_NOUN, EL_EDIT_VERB].forEach(element => {
-    if (document.activeElement == element) {
-      isEditing = true;
-      if (element == selectedWordElement) isEditingCurrentData = true;
-      return false;
-    }
-  });
+  isEditing = checkEditing();
 
   switch (event.key) {
     case 'ArrowDown':
@@ -399,12 +391,10 @@ document.addEventListener('keydown', function(event) {
       controller.saveReibun().then((data) => createReibunListElement(data));
       break;
     case 'e':
-      if (isEditing && isEditingCurrentData) return;
+      if (isEditing) return;
       if (selectedWordType == TYPE_EDIT) {
         event.preventDefault();
         controller.editStart();
-        isEditing = true;
-        isEditingCurrentData = true;
       }
       break;
     case 'Escape':
@@ -512,4 +502,9 @@ function eschtml(str) {
 
 function trim(str) {
   return str.replace(/^[\s\u3000]+|[\s\u3000]+$/g, '');
+}
+
+function checkEditing() {
+  const focusedElement = document.activeElement;
+  return focusedElement && focusedElement !== document.body;
 }
