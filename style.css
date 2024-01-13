@@ -60,6 +60,7 @@ h3 {
 
 .container {
     display: inline-block;
+    vertical-align: top;
 }
 
 .container:last-of-type {
