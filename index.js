@@ -181,6 +181,7 @@ Controller.prototype.editStart = function () {
 
 Controller.prototype.editEnd = function () {
   document.activeElement.blur();
+  EL_SEARCH.innerHTML = "";
 };
 
 Controller.prototype.initDatabase = function () {
@@ -343,7 +344,6 @@ document.addEventListener("keydown", function (event) {
           controller.useWord();
           controller.editEnd();
           controller.selectWord(getEditWordElementByPath(selectedWordPath));
-          EL_SEARCH.innerHTML = "";
         }
       } else {
         if (selectedWordType == TYPE_KEEP || selectedWordType == TYPE_SEARCH) {
@@ -378,7 +378,7 @@ document.addEventListener("keydown", function (event) {
       if (!isEditing) return;
       controller.editEnd();
       break;
-    case "k":
+    case "s":
       if (isEditing) return;
       if (selectedWordType == TYPE_EDIT) controller.saveWord();
       break;
