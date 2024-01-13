@@ -51,7 +51,7 @@ h3 {
     font-size: 1rem;
     text-align: center;
     background-color: #222;
-    margin-left: 75px;
+    margin-bottom: -15px;
 }
 
 .selected {
@@ -67,7 +67,6 @@ h3 {
 }
 
 .content {
-    width: 250px;
     display: inline-block;
     margin-right: 1rem;
 }
@@ -122,14 +121,39 @@ dd {
 .list {
     border: 1px solid #fff;
     height: 156px;
-    margin-top: -15px;
     padding: 1rem;
     overflow-y: auto;
 }
+.list li {
+    line-height: 1.25;
+    margin-bottom: 5px;
+}
 
-#search-area .list,
 #save-area .list {
-    height: 530px;
+    width: 250px;
+    height: 510px;
+}
+
+#save-area h3 {
+    margin-left: calc((250px - 100px) / 2);
+}
+
+#keep-area .list {
+    width: 200px;
+    height: 150px;
+}
+
+#keep-area h3 {
+    margin-left: calc((200px - 100px) / 2);
+}
+
+#search-area .list {
+    width: 200px;
+    height: 510px;
+}
+
+#search-area h3 {
+    margin-left: calc((200px - 100px) / 2);
 }
 
 #keep-noun,
