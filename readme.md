@@ -1,5 +1,7 @@
 # Reibun Generator
 
+![screenshot.png](images/screenshot.png)
+
 Reibun Generator is a web browser application primarily designed for local use, focused on generating Japanese example sentences. This application, built using Javascript, is optimized for PC use and is intended to be operated mainly through keyboard interactions.
 
 ## Installation
