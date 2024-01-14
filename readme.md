@@ -1,4 +1,4 @@
-# Reibun Generator
+# REIBUN GENERATOR
 
 ![screenshot.png](images/screenshot.png)
 
