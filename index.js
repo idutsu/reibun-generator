@@ -86,7 +86,7 @@ Controller.prototype.saveWord = function () {
     li.setAttribute("data-path", selectedWordPath);
     li.innerText = eschtml(selectedWordText);
     const wordListElement = getListWordElementByPath(selectedWordPath);
-    wordListElement.appendChild(li);
+    wordListElement.prepend(li);
   }
 };
 
@@ -153,8 +153,7 @@ Controller.prototype.searchWords = function (path, searchWord) {
         }
       });
 
-      const searchList = document.getElementById(ID_SEARCH);
-      searchList.innerHTML = "";
+      EL_SEARCH.innerHTML = "";
 
       if (results.length > 0) {
         const fragment = document.createDocumentFragment();
@@ -167,7 +166,7 @@ Controller.prototype.searchWords = function (path, searchWord) {
           fragment.appendChild(li);
         });
 
-        searchList.appendChild(fragment);
+        EL_SEARCH.appendChild(fragment);
       }
     })
     .catch((error) => console.error(error));
