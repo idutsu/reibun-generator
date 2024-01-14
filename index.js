@@ -35,7 +35,7 @@ function Controller() {
   this.selectedWordIndex = null; //int
   this.selectedWordPath = null; //string
   this.selectedWordType = null; // string
-  this.db = null; // object
+  this.db = null; // obj
   this.initDatabase()
     .then(() => this.getReibun())
     .catch((error) => console.error(error));
