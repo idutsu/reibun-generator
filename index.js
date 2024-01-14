@@ -32,10 +32,10 @@ const EL_CALC_PART = document.getElementById("calc-part");
 const EL_CALC_VERB = document.getElementById("calc-verb");
 
 function Controller() {
-  this.selectedWordIndex = null;
-  this.selectedWordPath = null;
-  this.selectedWordType = null;
-  this.db = null;
+  this.selectedWordIndex = null; //int
+  this.selectedWordPath = null; //string
+  this.selectedWordType = null; // string
+  this.db = null; // object
   this.initDatabase()
     .then(() => this.getReibun())
     .catch((error) => console.error(error));
