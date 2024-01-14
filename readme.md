@@ -58,7 +58,7 @@ This area displays potential word suggestions when editing a word in the Reibun 
 
 ## Japanese Dictionaries
 
-This application uses [`IPA Dictionary`](https://github.com/idutsu/reibun-generator/blob/main/license.txt) to create example sentences :
+This application uses `IPA Dictionary` and  `Japanese Wordnet` to create example sentences :
 
 - [`noun.csv`](https://github.com/idutsu/reibun-generator/tree/main/csv/noun.csv): Contains nouns and their readings.
 - [`part.csv`](https://github.com/idutsu/reibun-generator/tree/main/csv/part.csv): Contains particles.
