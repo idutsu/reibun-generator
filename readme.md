@@ -42,7 +42,7 @@ By default, the server will start on port 8080. You can access the application b
 
 ## Application Structure
 
-Reibun-Generator is composed of three main areas:
+Reibun Generator is composed of three main areas:
 
 ### Reibun Area
 
