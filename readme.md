@@ -16,7 +16,7 @@ git clone https://github.com/idutsu/reibun-generator.git
 
 ### Prerequisites
 
-Before proceeding, ensure that `Node.js` is installed on your system. If you do not have Node.js installed, you can download and install it from [`Node.js official website`](https://nodejs.org/en).
+Before proceeding, ensure that `Node.js` is installed on your system. If you do not have Node.js installed, you can download and install it from [Node.js official website](https://nodejs.org/en).
 
 ### Install dependencies
 
