@@ -139,12 +139,12 @@ dd {
     margin-left: calc((250px - 100px) / 2);
 }
 
-#keep-area .list {
+#fav-area .list {
     width: 200px;
     height: 150px;
 }
 
-#keep-area h3 {
+#fav-area h3 {
     margin-left: calc((200px - 100px) / 2);
 }
 
@@ -157,8 +157,8 @@ dd {
     margin-left: calc((200px - 100px) / 2);
 }
 
-#keep-noun,
-#keep-part {
+#fav-noun,
+#fav-part {
     margin-bottom: 1rem;
 }
 

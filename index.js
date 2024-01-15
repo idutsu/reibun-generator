@@ -6,25 +6,25 @@ const PATH_NOUN = "noun";
 const PATH_PART = "part";
 const PATH_VERB = "verb";
 const TYPE_EDIT = "edit";
-const TYPE_KEEP = "keep";
+const TYPE_FAV = "fav";
 const TYPE_SEARCH = "search";
 const TYPE_REIBUN = "reibun";
 const CL_SELECTED = "selected";
 const ID_EDIT_NOUN = "edit-noun";
 const ID_EDIT_PART = "edit-part";
 const ID_EDIT_VERB = "edit-verb";
-const ID_KEEP_NOUN = "keep-noun";
-const ID_KEEP_PART = "keep-part";
-const ID_KEEP_VERB = "keep-verb";
+const ID_FAV_NOUN = "fav-noun";
+const ID_FAV_PART = "fav-part";
+const ID_FAV_VERB = "fav-verb";
 const ID_SEARCH = "search";
 const ID_REIBUN = "reibun";
 
 const EL_EDIT_NOUN = document.getElementById(ID_EDIT_NOUN);
 const EL_EDIT_PART = document.getElementById(ID_EDIT_PART);
 const EL_EDIT_VERB = document.getElementById(ID_EDIT_VERB);
-const EL_KEEP_NOUN = document.getElementById(ID_KEEP_NOUN);
-const EL_KEEP_PART = document.getElementById(ID_KEEP_PART);
-const EL_KEEP_VERB = document.getElementById(ID_KEEP_VERB);
+const EL_FAV_NOUN = document.getElementById(ID_FAV_NOUN);
+const EL_FAV_PART = document.getElementById(ID_FAV_PART);
+const EL_FAV_VERB = document.getElementById(ID_FAV_VERB);
 const EL_SEARCH = document.getElementById(ID_SEARCH);
 const EL_REIBUN = document.getElementById(ID_REIBUN);
 const EL_CALC_NOUN = document.getElementById("calc-noun");
@@ -53,7 +53,7 @@ Controller.prototype.selectWord = function (wordElement) {
 };
 
 Controller.prototype.selectNextWord = function () {
-  const selectedWordElement = this._getSelectedWordElement();
+  const selectedWordElement = this.getSelectedWordElement();
   const nextWordElement = selectedWordElement.nextElementSibling;
   if (nextWordElement) {
     this.selectWord(nextWordElement);
@@ -62,7 +62,7 @@ Controller.prototype.selectNextWord = function () {
 };
 
 Controller.prototype.selectPrevWord = function () {
-  const selectedWordElement = this._getSelectedWordElement();
+  const selectedWordElement = this.getSelectedWordElement();
   const prevWordElement = selectedWordElement.previousElementSibling;
   if (prevWordElement) {
     this.selectWord(prevWordElement);
@@ -76,13 +76,13 @@ Controller.prototype.selectList = function (listElement) {
 };
 
 Controller.prototype.saveWord = function () {
-  const selectedWordElement = this._getSelectedWordElement();
+  const selectedWordElement = this.getSelectedWordElement();
   const selectedWordPath = this.selectedWordPath;
   const selectedWordText = trim(selectedWordElement.value);
   if (selectedWordText != "") {
     const li = document.createElement("li");
     li.classList.add(CL_WORD);
-    li.setAttribute("data-type", TYPE_KEEP);
+    li.setAttribute("data-type", TYPE_FAV);
     li.setAttribute("data-path", selectedWordPath);
     li.innerText = eschtml(selectedWordText);
     const wordListElement = getListWordElementByPath(selectedWordPath);
@@ -91,7 +91,7 @@ Controller.prototype.saveWord = function () {
 };
 
 Controller.prototype.deleteWord = function () {
-  const selectedWordElement = this._getSelectedWordElement();
+  const selectedWordElement = this.getSelectedWordElement();
   const prevWordElement = selectedWordElement.previousElementSibling;
   const nextWordElement = selectedWordElement.nextElementSibling;
   selectedWordElement.remove();
@@ -105,7 +105,7 @@ Controller.prototype.deleteWord = function () {
 };
 
 Controller.prototype.useWord = function () {
-  const selectedWordElement = this._getSelectedWordElement();
+  const selectedWordElement = this.getSelectedWordElement();
   const selectedWordText = selectedWordElement.innerText;
   const selectedWordPath = this.selectedWordPath;
   const editWordElement = getEditWordElementByPath(selectedWordPath);
@@ -113,7 +113,23 @@ Controller.prototype.useWord = function () {
   calcInputTextWidth(editWordElement);
 };
 
-Controller.prototype.changeWord = function (editWordElement) {
+Controller.prototype.changeWord = function () {
+  const path = this.selectedWordPath;
+  const file = "csv/" + path + ".csv";
+  fetch(file)
+    .then((response) => response.text())
+    .then((text) => {
+      const lines = text.split("\n");
+      const randomLine = lines[Math.floor(Math.random() * lines.length)];
+      const randomWord = randomLine.split(",")[0];
+      const editWordElement = getEditWordElementByPath(path);
+      editWordElement.value = eschtml(randomWord);
+      calcInputTextWidth(editWordElement);
+    })
+    .catch((error) => console.error(error));
+};
+
+Controller.prototype.changeWordByElement = function (editWordElement) {
   const file = "csv/" + editWordElement.dataset.path + ".csv";
   fetch(file)
     .then((response) => response.text())
@@ -173,7 +189,7 @@ Controller.prototype.searchWords = function (path, searchWord) {
 };
 
 Controller.prototype.editStart = function () {
-  const selectedWordElement = this._getSelectedWordElement();
+  const selectedWordElement = this.getSelectedWordElement();
   selectedWordElement.focus();
   EL_SEARCH.innerHTML = "";
 };
@@ -246,7 +262,7 @@ Controller.prototype.saveReibun = function () {
 
 Controller.prototype.deleteReibun = function () {
   return new Promise((resolve, reject) => {
-    const selectedWordElement = this._getSelectedWordElement();
+    const selectedWordElement = this.getSelectedWordElement();
     const transaction = this.db.transaction(DB_TABLE, "readwrite");
     const store = transaction.objectStore(DB_TABLE);
     const reibunId = Number(selectedWordElement.dataset.id);
@@ -263,7 +279,7 @@ Controller.prototype.deleteReibun = function () {
   });
 };
 
-Controller.prototype._getSelectedWordElement = function () {
+Controller.prototype.getSelectedWordElement = function () {
   return document.querySelectorAll("." + CL_WORD)[this.selectedWordIndex];
 };
 
@@ -282,9 +298,9 @@ Controller.prototype._getWordIndex = function (wordElement) {
 };
 
 let controller = new Controller();
-controller.changeWord(EL_EDIT_NOUN);
-controller.changeWord(EL_EDIT_PART);
-controller.changeWord(EL_EDIT_VERB);
+controller.changeWordByElement(EL_EDIT_NOUN);
+controller.changeWordByElement(EL_EDIT_PART);
+controller.changeWordByElement(EL_EDIT_VERB);
 
 const keysPressed = {};
 let isKeyPressed = false;
@@ -296,7 +312,6 @@ document.addEventListener("keydown", function (event) {
 
   keysPressed[event.key] = true;
 
-  const selectedWordElement = controller._getSelectedWordElement();
   const selectedWordPath = controller.selectedWordPath;
   const selectedWordType = controller.selectedWordType;
 
@@ -315,8 +330,7 @@ document.addEventListener("keydown", function (event) {
         }
       } else {
         if (selectedWordType != TYPE_EDIT) {
-          if (selectedWordElement.nextElementSibling)
-            controller.selectNextWord();
+          controller.selectNextWord();
         }
       }
       break;
@@ -324,7 +338,7 @@ document.addEventListener("keydown", function (event) {
       if (isEditing) {
         event.preventDefault();
         if (selectedWordType == TYPE_SEARCH) {
-          if (!selectedWordElement.previousElementSibling) {
+          if (!controller.getSelectedWordElement().previousElementSibling) {
             controller.selectWord(getEditWordElementByPath(selectedWordPath));
           } else {
             controller.selectPrevWord();
@@ -332,8 +346,7 @@ document.addEventListener("keydown", function (event) {
         }
       } else {
         if (selectedWordType != TYPE_EDIT) {
-          if (selectedWordElement.previousElementSibling)
-            controller.selectPrevWord();
+          controller.selectPrevWord();
         }
       }
       break;
@@ -345,10 +358,10 @@ document.addEventListener("keydown", function (event) {
           controller.selectWord(getEditWordElementByPath(selectedWordPath));
         }
       } else {
-        if (selectedWordType == TYPE_KEEP || selectedWordType == TYPE_SEARCH) {
+        if (selectedWordType == TYPE_FAV || selectedWordType == TYPE_SEARCH) {
           controller.useWord();
         } else if (selectedWordType == TYPE_EDIT) {
-          controller.changeWord(selectedWordElement);
+          controller.changeWord();
         }
       }
       break;
@@ -383,15 +396,15 @@ document.addEventListener("keydown", function (event) {
       break;
     case "n":
       if (isEditing) return;
-      controller.selectList(EL_KEEP_NOUN);
+      controller.selectList(EL_FAV_NOUN);
       break;
     case "p":
       if (isEditing) return;
-      controller.selectList(EL_KEEP_PART);
+      controller.selectList(EL_FAV_PART);
       break;
     case "v":
       if (isEditing) return;
-      controller.selectList(EL_KEEP_VERB);
+      controller.selectList(EL_FAV_VERB);
       break;
     case "s":
       if (isEditing) return;
@@ -434,9 +447,8 @@ document.addEventListener("compositionend", function (event) {
 });
 
 document.addEventListener("input", function (event) {
-  const selectedWordElement = controller._getSelectedWordElement();
-  const selectedWordPath = selectedWordElement.dataset.path;
-  const selectedWordType = selectedWordElement.dataset.type;
+  const selectedWordPath = controller.selectedWordPath;
+  const selectedWordType = controller.selectedWordType;
   const text = event.target.value;
   if (!isComposing)
     if (text.length > 0) controller.searchWords(selectedWordPath, text);
@@ -471,13 +483,13 @@ function getEditWordElementByPath(path) {
 function getListWordElementByPath(path) {
   switch (path) {
     case PATH_NOUN:
-      return EL_KEEP_NOUN;
+      return EL_FAV_NOUN;
     case PATH_PART:
-      return EL_KEEP_PART;
+      return EL_FAV_PART;
     case PATH_VERB:
-      return EL_KEEP_VERB;
+      return EL_FAV_VERB;
     default:
-      return EL_KEEP_NOUN;
+      return EL_FAV_NOUN;
   }
 }
 
