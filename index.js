@@ -100,7 +100,7 @@ Controller.prototype.deleteWord = function () {
   } else if (nextWordElement) {
     this.selectWord(nextWordElement);
   } else {
-    this.selectWord(document.getElementById(ID_EDIT_NOUN));
+    this.selectWord(EL_EDIT_NOUN);
   }
 };
 
