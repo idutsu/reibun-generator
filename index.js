@@ -331,7 +331,7 @@
         if (isEditing) {
           event.preventDefault();
           if (selectedWordType == TYPE_SEARCH) {
-            if (!controller.selecteWordElement.previousElementSibling) {
+            if (!selectedWordElement.previousElementSibling) {
               controller.selectWord(getEditWordElementByPath(selectedWordPath));
             } else {
               controller.selectPrevWord();
