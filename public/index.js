@@ -33,7 +33,7 @@
   const EL_CALC_VERB = document.getElementById("calc-verb");
 
   function Controller() {
-    this.selecteWordElement = null;
+    this.selectedWordElement = null;
     this.db = null;
   }
 
@@ -45,16 +45,16 @@
   };
 
   Controller.prototype.selectWord = function (wordElement) {
-    let selectedWordElement = this.selecteWordElement;
+    let selectedWordElement = this.selectedWordElement;
     if (selectedWordElement) {
       selectedWordElement.classList.remove(CL_SELECTED);
     }
-    this.selecteWordElement = wordElement;
-    this.selecteWordElement.classList.add(CL_SELECTED);
+    this.selectedWordElement = wordElement;
+    this.selectedWordElement.classList.add(CL_SELECTED);
   };
 
   Controller.prototype.selectNextWord = function () {
-    const nextWordElement = this.selecteWordElement.nextElementSibling;
+    const nextWordElement = this.selectedWordElement.nextElementSibling;
     if (nextWordElement) {
       this.selectWord(nextWordElement);
       nextWordElement.scrollIntoView({
@@ -65,7 +65,7 @@
   };
 
   Controller.prototype.selectPrevWord = function () {
-    const prevWordElement = this.selecteWordElement.previousElementSibling;
+    const prevWordElement = this.selectedWordElement.previousElementSibling;
     if (prevWordElement) {
       this.selectWord(prevWordElement);
       prevWordElement.scrollIntoView({
@@ -81,8 +81,8 @@
   };
 
   Controller.prototype.saveWord = function () {
-    const selectedWordPath = this.selecteWordElement.dataset.path;
-    const selectedWordText = trim(this.selecteWordElement.value);
+    const selectedWordPath = this.selectedWordElement.dataset.path;
+    const selectedWordText = trim(this.selectedWordElement.value);
     if (selectedWordText != "") {
       const li = document.createElement("li");
       li.classList.add(CL_WORD);
@@ -95,7 +95,7 @@
   };
 
   Controller.prototype.deleteWord = function () {
-    const selectedWordElement = this.selecteWordElement;
+    const selectedWordElement = this.selectedWordElement;
     const prevWordElement = selectedWordElement.previousElementSibling;
     const nextWordElement = selectedWordElement.nextElementSibling;
     selectedWordElement.remove();
@@ -109,7 +109,7 @@
   };
 
   Controller.prototype.useWord = function () {
-    const selectedWordElement = this.selecteWordElement;
+    const selectedWordElement = this.selectedWordElement;
     const selectedWordText = selectedWordElement.innerText;
     const selectedWordPath = selectedWordElement.dataset.path;
     const editWordElement = getEditWordElementByPath(selectedWordPath);
@@ -118,69 +118,35 @@
   };
 
   Controller.prototype.changeWord = function () {
-    const path = this.selecteWordElement.dataset.path;
-    const file = "csv/" + path + ".csv";
-    fetch(file)
-      .then((response) => response.text())
-      .then((text) => {
-        const lines = text.split("\n");
-        const randomLine = lines[Math.floor(Math.random() * lines.length)];
-        const randomWord = randomLine.split(",")[0];
-        const editWordElement = getEditWordElementByPath(path);
-        editWordElement.value = eschtml(randomWord);
-        calcInputTextWidth(editWordElement);
-      })
-      .catch((error) => console.error(error));
+    const path = this.selectedWordElement.dataset.path;
+    fetch('/dic/' + path)
+    .then(response => response.text())
+    .then(text => {
+      const randomWord = text.split(",")[0];
+      const editWordElement = getEditWordElementByPath(path);
+      editWordElement.value = eschtml(randomWord);
+      calcInputTextWidth(editWordElement);
+  })
+    .catch(error => console.error('Error:', error));
   };
 
   Controller.prototype.changeWordByElement = function (editWordElement) {
-    const file = "csv/" + editWordElement.dataset.path + ".csv";
-    fetch(file)
-      .then((response) => response.text())
-      .then((text) => {
-        const lines = text.split("\n");
-        const randomLine = lines[Math.floor(Math.random() * lines.length)];
-        const randomWord = randomLine.split(",")[0];
-        editWordElement.value = eschtml(randomWord);
-        calcInputTextWidth(editWordElement);
-      })
-      .catch((error) => console.error(error));
+    const path = editWordElement.dataset.path;
+    fetch('/dic/' + path)
+    .then(response => response.text())
+    .then(text => {
+      const randomWord = text.split(",")[0];
+      editWordElement.value = eschtml(randomWord);
+      calcInputTextWidth(editWordElement);
+  })
+    .catch(error => console.error('Error:', error));
   };
 
   Controller.prototype.searchWords = function (path, searchWord) {
-    fetch("csv/" + path + ".csv")
-      .then((response) => response.text())
-      .then((text) => {
-        const lines = text.split("\n");
-        let results = [];
-        const katakanaSearch = searchWord.replace(
-          /[\u3041-\u3096]/g,
-          (match) => {
-            return String.fromCharCode(match.charCodeAt(0) + 0x60);
-          },
-        );
-        const hiraganaSearch = searchWord.replace(
-          /[\u30A1-\u30F6]/g,
-          (match) => {
-            return String.fromCharCode(match.charCodeAt(0) - 0x60);
-          },
-        );
-        lines.forEach((line) => {
-          const [word, reading] = line.split(",");
-          if (
-            (word &&
-              (word.startsWith(katakanaSearch) ||
-                word.startsWith(hiraganaSearch))) ||
-            (reading &&
-              (reading.startsWith(katakanaSearch) ||
-                reading.startsWith(hiraganaSearch)))
-          ) {
-            results.push(word);
-          }
-        });
-
+    fetch("/dic/search/" + path + "/" + searchWord)
+      .then((response) => response.json())
+      .then((results) => {
         EL_SEARCH.innerHTML = "";
-
         if (results.length > 0) {
           const fragment = document.createDocumentFragment();
           results.forEach((suggestion) => {
@@ -191,7 +157,6 @@
             li.textContent = eschtml(suggestion);
             fragment.appendChild(li);
           });
-
           EL_SEARCH.appendChild(fragment);
         }
       })
@@ -199,7 +164,7 @@
   };
 
   Controller.prototype.editStart = function () {
-    this.selecteWordElement.focus();
+    this.selectedWordElement.focus();
     EL_SEARCH.innerHTML = "";
   };
 
@@ -271,7 +236,7 @@
 
   Controller.prototype.deleteReibun = function () {
     return new Promise((resolve, reject) => {
-      const selectedWordElement = this.selecteWordElement;
+      const selectedWordElement = this.selectedWordElement;
       const transaction = this.db.transaction(DB_TABLE, "readwrite");
       const store = transaction.objectStore(DB_TABLE);
       const reibunId = Number(selectedWordElement.dataset.id);
@@ -304,7 +269,7 @@
 
     keysPressed[event.key] = true;
 
-    const selectedWordElement = controller.selecteWordElement;
+    const selectedWordElement = controller.selectedWordElement;
     const selectedWordPath = selectedWordElement.dataset.path;
     const selectedWordType = selectedWordElement.dataset.type;
 
@@ -443,7 +408,7 @@
   });
 
   document.addEventListener("input", function (event) {
-    const selectedWordElement = controller.selecteWordElement;
+    const selectedWordElement = controller.selectedWordElement;
     const selectedWordPath = selectedWordElement.dataset.path;
     const selectedWordType = selectedWordElement.dataset.type;
     const text = event.target.value;

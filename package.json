@@ -1,0 +1,26 @@
+{
+  "name": "reibun-generator",
+  "version": "1.0.0",
+  "description": "Reibun Generator is a web browser application primarily designed for local use, focused on generating Japanese example sentences. This application, built using Javascript, is optimized for PC use and is intended to be operated mainly through keyboard interactions.",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/idutsu/reibun-generator.git"
+  },
+  "author": "DAISUKE IDUTSU",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/idutsu/reibun-generator/issues"
+  },
+  "homepage": "https://github.com/idutsu/reibun-generator#readme",
+  "dependencies": {
+    "csv-parser": "^3.0.0",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
