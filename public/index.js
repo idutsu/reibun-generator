@@ -32,239 +32,236 @@
   const EL_CALC_PART = document.getElementById("calc-part");
   const EL_CALC_VERB = document.getElementById("calc-verb");
 
-  function Controller() {
-    this.selectedWordElement = null;
-    this.db = null;
-  }
-
-  Controller.prototype.init = function () {
-    this.selectWord(EL_EDIT_NOUN);
-    this.initDatabase()
-      .then(() => this.getReibun())
-      .catch((error) => console.error(error));
-  };
-
-  Controller.prototype.selectWord = function (wordElement) {
-    let selectedWordElement = this.selectedWordElement;
-    if (selectedWordElement) {
-      selectedWordElement.classList.remove(CL_SELECTED);
-    }
-    this.selectedWordElement = wordElement;
-    this.selectedWordElement.classList.add(CL_SELECTED);
-  };
-
-  Controller.prototype.selectNextWord = function () {
-    const nextWordElement = this.selectedWordElement.nextElementSibling;
-    if (nextWordElement) {
-      this.selectWord(nextWordElement);
-      nextWordElement.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  };
-
-  Controller.prototype.selectPrevWord = function () {
-    const prevWordElement = this.selectedWordElement.previousElementSibling;
-    if (prevWordElement) {
-      this.selectWord(prevWordElement);
-      prevWordElement.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  };
-
-  Controller.prototype.selectList = function (listElement) {
-    const firstWordElementInList = listElement.firstElementChild;
-    if (firstWordElementInList) this.selectWord(firstWordElementInList);
-  };
-
-  Controller.prototype.saveWord = function () {
-    const selectedWordPath = this.selectedWordElement.dataset.path;
-    const selectedWordText = trim(this.selectedWordElement.value);
-    if (selectedWordText != "") {
-      const li = document.createElement("li");
-      li.classList.add(CL_WORD);
-      li.setAttribute("data-type", TYPE_FAV);
-      li.setAttribute("data-path", selectedWordPath);
-      li.innerText = eschtml(selectedWordText);
-      const wordListElement = getListWordElementByPath(selectedWordPath);
-      wordListElement.prepend(li);
-    }
-  };
-
-  Controller.prototype.deleteWord = function () {
-    const selectedWordElement = this.selectedWordElement;
-    const prevWordElement = selectedWordElement.previousElementSibling;
-    const nextWordElement = selectedWordElement.nextElementSibling;
-    selectedWordElement.remove();
-    if (prevWordElement) {
-      this.selectWord(prevWordElement);
-    } else if (nextWordElement) {
-      this.selectWord(nextWordElement);
-    } else {
+  class Controller {
+    constructor() {
+      this.selectedWordElement = null;
       this.selectWord(EL_EDIT_NOUN);
+      this.getReibun();
     }
-  };
 
-  Controller.prototype.useWord = function () {
-    const selectedWordElement = this.selectedWordElement;
-    const selectedWordText = selectedWordElement.innerText;
-    const selectedWordPath = selectedWordElement.dataset.path;
-    const editWordElement = getEditWordElementByPath(selectedWordPath);
-    editWordElement.value = eschtml(selectedWordText);
-    calcInputTextWidth(editWordElement);
-  };
+    selectWord(wordElement) {
+      let selectedWordElement = this.selectedWordElement;
+      if (selectedWordElement) {
+        selectedWordElement.classList.remove(CL_SELECTED);
+      }
+      this.selectedWordElement = wordElement;
+      this.selectedWordElement.classList.add(CL_SELECTED);
+    }
 
-  Controller.prototype.changeWord = function () {
-    const path = this.selectedWordElement.dataset.path;
-    fetch('/dic/' + path)
-    .then(response => response.text())
-    .then(text => {
-      const randomWord = text.split(",")[0];
-      const editWordElement = getEditWordElementByPath(path);
-      editWordElement.value = eschtml(randomWord);
-      calcInputTextWidth(editWordElement);
-  })
-    .catch(error => console.error('Error:', error));
-  };
+    selectNextWord() {
+      const nextWordElement = this.selectedWordElement.nextElementSibling;
+      if (nextWordElement) {
+        this.selectWord(nextWordElement);
+        nextWordElement.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+    }
 
-  Controller.prototype.changeWordByElement = function (editWordElement) {
-    const path = editWordElement.dataset.path;
-    fetch('/dic/' + path)
-    .then(response => response.text())
-    .then(text => {
-      const randomWord = text.split(",")[0];
-      editWordElement.value = eschtml(randomWord);
-      calcInputTextWidth(editWordElement);
-  })
-    .catch(error => console.error('Error:', error));
-  };
+    selectPrevWord() {
+      const prevWordElement = this.selectedWordElement.previousElementSibling;
+      if (prevWordElement) {
+        this.selectWord(prevWordElement);
+        prevWordElement.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+    }
 
-  Controller.prototype.searchWords = function (path, searchWord) {
-    fetch("/dic/search/" + path + "/" + searchWord)
-      .then((response) => response.json())
-      .then((results) => {
-        EL_SEARCH.innerHTML = "";
-        if (results.length > 0) {
-          const fragment = document.createDocumentFragment();
-          results.forEach((suggestion) => {
-            const li = document.createElement("li");
-            li.classList.add(CL_WORD);
-            li.dataset.path = path;
-            li.dataset.type = TYPE_SEARCH;
-            li.textContent = eschtml(suggestion);
-            fragment.appendChild(li);
-          });
-          EL_SEARCH.appendChild(fragment);
-        }
+    selectList(listElement) {
+      const firstWordElementInList = listElement.firstElementChild;
+      if (firstWordElementInList) this.selectWord(firstWordElementInList);
+    }
+
+    saveWord() {
+      const selectedWordPath = this.selectedWordElement.dataset.path;
+      const selectedWordText = trim(this.selectedWordElement.value);
+      if (trim(selectedWordText) == "") return;
+      fetch(`/dic/save/word/fav/${selectedWordPath}/${selectedWordText}`, {
+        method: "POST",
       })
-      .catch((error) => console.error(error));
-  };
+        .then((response) => response.text())
+        .then((data) => {
+          const li = document.createElement("li");
+          li.classList.add(CL_WORD);
+          li.setAttribute("data-type", TYPE_FAV);
+          li.setAttribute("data-path", selectedWordPath);
+          li.innerText = eschtml(data);
+          const wordListElement = getListWordElementByPath(selectedWordPath);
+          wordListElement.prepend(li);
+        })
+        .catch((error) => console.error("Error:", error));
+    }
 
-  Controller.prototype.editStart = function () {
-    this.selectedWordElement.focus();
-    EL_SEARCH.innerHTML = "";
-  };
+    deleteWord() {
+      const selectedWordText = trim(selectedWordElement.innerHTML);
 
-  Controller.prototype.editEnd = function () {
-    document.activeElement.blur();
-    EL_SEARCH.innerHTML = "";
-  };
+      if (selectedWordText == "") return;
 
-  Controller.prototype.initDatabase = function () {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB, DB_VERSION);
+      const selectedWordElement = this.selectedWordElement;
+      const selectedWordPath = selectedWordElement.dataset.path;
+      const prevWordElement = selectedWordElement.previousElementSibling;
+      const nextWordElement = selectedWordElement.nextElementSibling;
 
-      request.onupgradeneeded = (event) => {
-        const db = event.target.result;
-        db.createObjectStore(DB_TABLE, { autoIncrement: true });
-      };
+      fetch(`/dic/delete/word/fav/${selectedWordPath}/${selectedWordText}`, {
+        method: "POST",
+      })
+        .then((response) => response.text())
+        .then((data) => {
+          selectedWordElement.remove();
+          if (prevWordElement) {
+            this.selectWord(prevWordElement);
+          } else if (nextWordElement) {
+            this.selectWord(nextWordElement);
+          } else {
+            this.selectWord(EL_EDIT_NOUN);
+          }
+        })
+        .catch((error) => console.error("Error:", error));
+    }
 
-      request.onsuccess = (event) => {
-        this.db = event.target.result;
-        resolve();
-      };
+    useWord() {
+      const selectedWordElement = this.selectedWordElement;
+      const selectedWordText = selectedWordElement.innerText;
+      const selectedWordPath = selectedWordElement.dataset.path;
+      const editWordElement = getEditWordElementByPath(selectedWordPath);
+      editWordElement.value = eschtml(selectedWordText);
+      calcInputTextWidth(editWordElement);
+    }
 
-      request.onerror = (event) => {
-        reject(event.target.errorCode);
-      };
-    });
-  };
+    changeWord() {
+      const path = this.selectedWordElement.dataset.path;
+      fetch(`/dic/get/word/random/${path}`)
+        .then((response) => response.text())
+        .then((text) => {
+          const randomWord = text.split(",")[0];
+          const editWordElement = getEditWordElementByPath(path);
+          editWordElement.value = eschtml(randomWord);
+          calcInputTextWidth(editWordElement);
+        })
+        .catch((error) => console.error("Error:", error));
+    }
 
-  Controller.prototype.getReibun = function () {
-    return new Promise((resolve, reject) => {
-      const transaction = this.db.transaction(DB_TABLE, "readonly");
-      const store = transaction.objectStore(DB_TABLE);
-      const getRequest = store.openCursor();
-      EL_REIBUN.innerHTML = "";
+    changeWordByElement(editWordElement) {
+      const path = editWordElement.dataset.path;
+      fetch(`/dic/get/word/random/${path}`)
+        .then((response) => response.text())
+        .then((text) => {
+          const randomWord = text.split(",")[0];
+          editWordElement.value = eschtml(randomWord);
+          calcInputTextWidth(editWordElement);
+        })
+        .catch((error) => console.error("Error:", error));
+    }
 
-      getRequest.onsuccess = (event) => {
-        const cursor = event.target.result;
-        if (cursor) {
-          createReibunListElement({ id: cursor.key, text: cursor.value });
-          cursor.continue();
-        }
-        resolve(cursor);
-      };
-      getRequest.onerror = (event) => {
-        reject(event.target.errorCode);
-      };
-    });
-  };
+    searchWords(path, word) {
+      fetch(`/dic/get/words/search/${path}/${word}`)
+        .then((response) => response.json())
+        .then((results) => {
+          EL_SEARCH.innerHTML = "";
+          if (results.length > 0) {
+            const fragment = document.createDocumentFragment();
+            results.forEach((suggestion) => {
+              const li = document.createElement("li");
+              li.classList.add(CL_WORD);
+              li.dataset.path = path;
+              li.dataset.type = TYPE_SEARCH;
+              li.textContent = eschtml(suggestion);
+              fragment.appendChild(li);
+            });
+            EL_SEARCH.appendChild(fragment);
+          }
+        })
+        .catch((error) => console.error(error));
+    }
 
-  Controller.prototype.saveReibun = function () {
-    return new Promise((resolve, reject) => {
-      const text =
+    editStart() {
+      this.selectedWordElement.focus();
+      EL_SEARCH.innerHTML = "";
+    }
+
+    editEnd() {
+      document.activeElement.blur();
+      EL_SEARCH.innerHTML = "";
+    }
+
+    getReibun() {
+      fetch("/dic/get/reibun")
+        .then((response) => response.json())
+        .then((results) => {
+          results.forEach((reibun) => {
+            createReibunListElement(reibun);
+          });
+        })
+        .catch((error) => console.error("Error:", error));
+    }
+
+    getFavoriteWords(path) {
+      fetch(`/dic/get/words/fav/${path}`)
+        .then((response) => response.json())
+        .then((results) => {
+          const favoriteListElement = getListWordElementByPath(path);
+          results.forEach((word) => {
+            createFavoriteListElement(word, path, favoriteListElement);
+          });
+        })
+        .catch((error) => console.error("Error:", error));
+    }
+
+    saveReibun() {
+      const reibun =
         trim(EL_EDIT_NOUN.value) +
         trim(EL_EDIT_PART.value) +
         trim(EL_EDIT_VERB.value);
-      const transaction = this.db.transaction(DB_TABLE, "readwrite");
-      const store = transaction.objectStore(DB_TABLE);
-      const addRequest = store.add(text);
+      if (trim(reibun) == "") return;
+      fetch(`/dic/save/reibun/${reibun}`, {
+        method: "POST",
+      })
+        .then((response) => response.text())
+        .then((data) => {
+          if (data) {
+            createReibunListElement(data);
+          }
+        })
+        .catch((error) => console.error("Error:", error));
+    }
 
-      addRequest.onsuccess = (event) => {
-        resolve({ id: event.target.result, text: text });
-      };
+    deleteReibun() {
+      return new Promise((resolve, reject) => {
+        const selectedWordElement = this.selectedWordElement;
+        const transaction = this.db.transaction(DB_TABLE, "readwrite");
+        const store = transaction.objectStore(DB_TABLE);
+        const reibunId = Number(selectedWordElement.dataset.id);
+        const reibunText = selectedWordElement.textContent;
+        const deleteRequest = store.delete(reibunId);
 
-      addRequest.onerror = (event) => {
-        reject(event.target.errorCode);
-      };
-    });
-  };
+        deleteRequest.onsuccess = () => {
+          resolve({ id: reibunId, text: reibunText });
+        };
 
-  Controller.prototype.deleteReibun = function () {
-    return new Promise((resolve, reject) => {
-      const selectedWordElement = this.selectedWordElement;
-      const transaction = this.db.transaction(DB_TABLE, "readwrite");
-      const store = transaction.objectStore(DB_TABLE);
-      const reibunId = Number(selectedWordElement.dataset.id);
-      const reibunText = selectedWordElement.textContent;
-      const deleteRequest = store.delete(reibunId);
-
-      deleteRequest.onsuccess = () => {
-        resolve({ id: reibunId, text: reibunText });
-      };
-
-      deleteRequest.onerror = (event) => {
-        reject(event.target.errorCode);
-      };
-    });
-  };
+        deleteRequest.onerror = (event) => {
+          reject(event.target.errorCode);
+        };
+      });
+    }
+  }
 
   let controller = new Controller();
-  controller.init();
   controller.changeWordByElement(EL_EDIT_NOUN);
   controller.changeWordByElement(EL_EDIT_PART);
   controller.changeWordByElement(EL_EDIT_VERB);
+  controller.getFavoriteWords(PATH_NOUN);
+  controller.getFavoriteWords(PATH_PART);
+  controller.getFavoriteWords(PATH_VERB);
 
   const keysPressed = {};
   let isKeyPressed = false;
   let isComposing = false;
   let isEditing = false;
 
-  document.addEventListener("keydown", function (event) {
+  document.addEventListener("keydown", (event) => {
     if (isKeyPressed) return;
 
     keysPressed[event.key] = true;
@@ -335,7 +332,7 @@
         break;
       case " ":
         if (isEditing) return;
-        controller.saveReibun().then((data) => createReibunListElement(data));
+        controller.saveReibun();
         break;
       case "e":
         if (isEditing) return;
@@ -389,16 +386,16 @@
     isKeyPressed = true;
   });
 
-  document.addEventListener("keyup", function (event) {
+  document.addEventListener("keyup", (event) => {
     delete keysPressed[event.key];
     isKeyPressed = false;
   });
 
-  document.addEventListener("compositionstart", function () {
+  document.addEventListener("compositionstart", () => {
     isComposing = true;
   });
 
-  document.addEventListener("compositionend", function (event) {
+  document.addEventListener("compositionend", (event) => {
     isComposing = false;
     const text = event.target.value;
     const path = event.target.dataset.path;
@@ -407,7 +404,7 @@
     }
   });
 
-  document.addEventListener("input", function (event) {
+  document.addEventListener("input", (event) => {
     const selectedWordElement = controller.selectedWordElement;
     const selectedWordPath = selectedWordElement.dataset.path;
     const selectedWordType = selectedWordElement.dataset.type;
@@ -420,13 +417,21 @@
     calcInputTextWidth(event.target);
   });
 
-  function createReibunListElement(record) {
+  function createReibunListElement(data) {
     const li = document.createElement("li");
     li.classList.add(CL_WORD);
     li.setAttribute("data-type", TYPE_REIBUN);
-    li.setAttribute("data-id", record.id);
-    li.textContent = eschtml(record.text);
+    li.textContent = eschtml(data);
     EL_REIBUN.prepend(li);
+  }
+
+  function createFavoriteListElement(word, path, listElement) {
+    const li = document.createElement("li");
+    li.classList.add(CL_WORD);
+    li.setAttribute("data-type", TYPE_FAV);
+    li.setAttribute("data-path", path);
+    li.textContent = eschtml(word);
+    listElement.prepend(li);
   }
 
   function getEditWordElementByPath(path) {

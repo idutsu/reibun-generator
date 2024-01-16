@@ -1,108 +1,64 @@
-const fs = require('fs');
-const csv = require('csv-parser');
-const path = require('path');
-const express = require('express');
+import express from "express";
+import CsvController from "./src/csvcontroller.js";
+import {
+  getFavoriteWordsFromCsv,
+  getRandomWordFromCsv,
+  getReibunFromCsv,
+  getSearchWordsFromCsv,
+} from "./src/csvfunctions.js";
+
 const app = express();
 const port = 3000;
 
-app.use(express.static('public'));
+let controller = new CsvController();
 
-let csvCache = {};
+app.use(express.static("public"));
 
-app.get('/dic/:path', (req, res) => {
-    const filePath = path.join(__dirname, 'csv', req.params.path + '.csv');
-
-    if (!fs.existsSync(filePath)) {
-        return res.status(404).send('File not found');
-    }
-    // キャッシュされている場合
-    if (csvCache[filePath]) {
-        return res.send(getRandomLineFromCsv(csvCache[filePath]));
-    }
-    // キャッシュされていない場合、ファイルを読み込む
-    fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) {
-            return res.status(500).send('Internal Server Error');
-        }
-        csvCache[filePath] = data;
-        res.send(getRandomLineFromCsv(data));
-    });
+app.get("/dic/get/word/random/:path", (req, res) => {
+  const filePath = controller.getCsvFilePath("edit", req.params.path);
+  controller.send(res, filePath, true, getRandomWordFromCsv);
 });
 
-
-app.get('/dic/search/:path/:searchWord', (req, res) => {
-    const filePath = path.join(__dirname, 'csv', req.params.path + '.csv');
-    const searchWord = req.params.searchWord;
-
-    if (!fs.existsSync(filePath)) {
-        return res.status(404).send('File not found');
-    }
-    // キャッシュされている場合
-    if (csvCache[filePath]) {
-        return res.send(searchCsv(csvCache[filePath], searchWord));
-    }
-    // キャッシュされていない場合、ファイルを読み込む
-    fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) {
-            return res.status(500).send('Internal Server Error');
-        }
-        csvCache[filePath] = data;
-        res.send(searchCsv(data, searchWord));
-    });
+app.post("/dic/save/word/fav/:path/:word", (req, res) => {
+  const filePath = controller.getCsvFilePath("fav", req.params.path);
+  const word = req.params.word;
+  controller.write(res, filePath, word);
 });
 
+app.post("/dic/delete/word/fav/:path/:word", (req, res) => {
+  const filePath = controller.getCsvFilePath("fav", req.params.path);
+  const deleteWord = req.params.word;
+  controller.delete(res, filePath, deleteWord);
+});
 
-const getRandomLineFromCsv = (csvData) => {
-    const lines = csvData.split("\n").filter(line => line.trim());
-    return lines[Math.floor(Math.random() * lines.length)];
-};
+app.get("/dic/get/words/fav/:path", (req, res) => {
+  const filePath = controller.getCsvFilePath("fav", req.params.path);
+  controller.send(res, filePath, false, getFavoriteWordsFromCsv);
+});
 
+app.get("/dic/get/words/search/:path/:word", (req, res) => {
+  const filePath = controller.getCsvFilePath("edit", req.params.path);
+  const searchWord = req.params.word;
+  controller.send(res, filePath, true, getSearchWordsFromCsv, searchWord);
+});
 
-const searchCsv = (csvData, searchWord) => {
-    const lines = csvData.split("\n");
-    let results = [];
-    const katakanaSearch = searchWord.replace(
-        /[\u3041-\u3096]/g,
-        (match) => {
-            return String.fromCharCode(match.charCodeAt(0) + 0x60);
-        },
-    );
-    const hiraganaSearch = searchWord.replace(
-        /[\u30A1-\u30F6]/g,
-        (match) => {
-            return String.fromCharCode(match.charCodeAt(0) - 0x60);
-        },
-    );
+app.get("/dic/get/reibun", (req, res) => {
+  const filePath = controller.getCsvFilePath("save", "reibun");
+  controller.send(res, filePath, false, getReibunFromCsv);
+});
 
-    lines.forEach((line) => {
-        const [word, reading] = line.split(",");
-        if (
-            (word &&
-            (word.startsWith(katakanaSearch) ||
-            word.startsWith(hiraganaSearch))) ||
-            (reading &&
-            (reading.startsWith(katakanaSearch) ||
-            reading.startsWith(hiraganaSearch)))
-        ) {
-            results.push(word);
-        }
-    });
-    return results;
-};
+app.post("/dic/save/reibun/:reibun", (req, res) => {
+  const filePath = controller.getCsvFilePath("save", "reibun");
+  const reibun = req.params.reibun;
+  controller.write(res, filePath, reibun);
+});
 
-
-
-
-
-
-
-
-
-
-
-
-
+app.post("/dic/delete/reibun/:reibun", (req, res) => {
+  const filePath = controller.getCsvFilePath("save", "reibun");
+  const deleteReibun = req.params.reibun;
+  controller.delete(res, filePath, deleteReibun);
+});
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Reibun Generator listening at http://localhost:${port}`);
 });

@@ -6,122 +6,114 @@
         <title>REIBUN GENERATOR</title>
     </head>
     <body>
+        <h1>REIBUN GENERATOR 1.0.0</h1>
         <div>
-            <h1>REIBUN GENERATOR 1.0.0</h1>
-            <div id="reibun-area">
-                <input
-                    type="text"
-                    value=""
-                    id="edit-noun"
-                    class="word"
-                    data-path="noun"
-                    data-type="edit"
-                /><input
-                    type="text"
-                    value=""
-                    id="edit-part"
-                    class="word"
-                    data-path="part"
-                    data-type="edit"
-                /><input
-                    type="text"
-                    value=""
-                    id="edit-verb"
-                    class="word"
-                    data-path="verb"
-                    data-type="edit"
-                />
-            </div>
+            <input
+                type="text"
+                value=""
+                id="edit-noun"
+                class="word"
+                data-path="noun"
+                data-type="edit"
+            /><input
+                type="text"
+                value=""
+                id="edit-part"
+                class="word"
+                data-path="part"
+                data-type="edit"
+            /><input
+                type="text"
+                value=""
+                id="edit-verb"
+                class="word"
+                data-path="verb"
+                data-type="edit"
+            />
         </div>
         <div class="container">
-            <dl id="usage-area">
-                <div>
-                    <dt><span class="key">ENTER</span></dt>
-                    <dd><span>CHANGE THE WORD / USE THE WORD</span></dd>
-                </div>
-                <div>
-                    <dt><span class="key">D</span></dt>
-                    <dd><span>DELETE THE WORD</span></dd>
-                </div>
-                <div>
-                    <dt><span class="key">E</span></dt>
-                    <dd><span>START EDITING THE WORD</span></dd>
-                </div>
-                <div>
-                    <dt><span class="key">ESC</span></dt>
-                    <dd><span>FINISH EDITING THE WORD </span></dd>
-                </div>
-                <div>
-                    <dt><span class="key">S</span></dt>
-                    <dd><span>ADD THE WORD TO FAVORITE</span></dd>
-                </div>
-                <div>
-                    <dt><span class="key">SPACE</span></dt>
-                    <dd><span>SAVE THE REIBUN</span></dd>
-                </div>
-                <div>
-                    <dt><span class="key">F</span></dt>
-                    <dd><span>SWITCH THE WORD IN REIBUN</span></dd>
-                </div>
-                <div>
-                    <dt><span class="key">N</span></dt>
-                    <dd><span>SELECT THE FAVORITE NOUN</span></dd>
-                </div>
-                <div>
-                    <dt><span class="key">P</span></dt>
-                    <dd><span>SELECT THE FAVORITE PARTICLE</span></dd>
-                </div>
-                <div>
-                    <dt><span class="key">V</span></dt>
-                    <dd><span>SELECT THE FAVORITE VERB</span></dd>
-                </div>
-                <div>
-                    <dt><span class="key">S</span></dt>
-                    <dd><span>SELECT THE SEARCH WORD</span></dd>
-                </div>
-                <div>
-                    <dt><span class="key">R</span></dt>
-                    <dd><span>SELECT THE SAVED REIBUN</span></dd>
-                </div>
-                <div>
-                    <dt>
-                        <span class="key">↑</span><span class="key">↓</span>
-                    </dt>
-                    <dd><span>SELECT THE NEXT/PREV WORD</span></dd>
-                </div>
-            </dl>
-            <footer id="copy">
-                <a
-                    href="https://github.com/idutsu/reibun-generator/tree/main"
-                    target="_blank"
-                    >(C) REIBUN GENERATOR</a
-                >
-            </footer>
-        </div>
-        <div class="container">
-            <div id="save-area" class="content">
-                <h3>REIBUN</h3>
+            <div class="content wide">
+                <h3>(R)EIBUN</h3>
                 <ul id="reibun" class="list"></ul>
             </div>
-            <ul id="fav-area" class="content">
-                <li>
-                    <h3>NOUN</h3>
-                    <ul id="fav-noun" class="list"></ul>
-                </li>
-                <li>
-                    <h3>PARTICLE</h3>
-                    <ul id="fav-part" class="list"></ul>
-                </li>
-                <li>
-                    <h3>VERB</h3>
-                    <ul id="fav-verb" class="list"></ul>
-                </li>
-            </ul>
-            <div id="search-area" class="content">
-                <h3>SEARCH</h3>
+            <div class="content">
+                <h3>(N)OUN</h3>
+                <ul id="fav-noun" class="list"></ul>
+            </div>
+            <div class="content">
+                <h3>(P)ARTICLE</h3>
+                <ul id="fav-part" class="list"></ul>
+            </div>
+            <div class="content">
+                <h3>(V)ERB</h3>
+                <ul id="fav-verb" class="list"></ul>
+            </div>
+            <div class="content">
+                <h3>(S)EARCH</h3>
                 <ul id="search" class="list"></ul>
             </div>
         </div>
+        <dl id="usage">
+            <div class="usage">
+                <dt><span class="key">ENTER</span></dt>
+                <dd><span>CHANGE THE WORD / USE THE WORD</span></dd>
+            </div>
+            <div class="usage">
+                <dt><span class="key">D</span></dt>
+                <dd><span>DELETE THE WORD</span></dd>
+            </div>
+            <div class="usage">
+                <dt><span class="key">E</span></dt>
+                <dd><span>START EDITING THE WORD</span></dd>
+            </div>
+            <div class="usage">
+                <dt><span class="key">ESC</span></dt>
+                <dd><span>FINISH EDITING THE WORD </span></dd>
+            </div>
+            <div class="usage">
+                <dt><span class="key">S</span></dt>
+                <dd><span>ADD THE WORD TO FAVORITE</span></dd>
+            </div>
+            <div class="usage">
+                <dt><span class="key">SPACE</span></dt>
+                <dd><span>SAVE THE REIBUN</span></dd>
+            </div>
+            <div class="usage">
+                <dt><span class="key">F</span></dt>
+                <dd><span>SWITCH THE WORD IN REIBUN</span></dd>
+            </div>
+            <div class="usage">
+                <dt><span class="key">N</span></dt>
+                <dd><span>SELECT THE FAVORITE NOUN</span></dd>
+            </div>
+            <div class="usage">
+                <dt><span class="key">P</span></dt>
+                <dd><span>SELECT THE FAVORITE PARTICLE</span></dd>
+            </div>
+            <div class="usage">
+                <dt><span class="key">V</span></dt>
+                <dd><span>SELECT THE FAVORITE VERB</span></dd>
+            </div>
+            <div class="usage">
+                <dt><span class="key">S</span></dt>
+                <dd><span>SELECT THE SEARCH WORD</span></dd>
+            </div>
+            <div class="usage">
+                <dt><span class="key">R</span></dt>
+                <dd><span>SELECT THE SAVED REIBUN</span></dd>
+            </div>
+            <div class="usage">
+                <dt><span class="key">↑</span><span class="key">↓</span></dt>
+                <dd><span>SELECT THE NEXT/PREV WORD</span></dd>
+            </div>
+        </dl>
+        <footer id="copy">
+            <a
+                href="https://github.com/idutsu/reibun-generator/tree/main"
+                target="_blank"
+                >(C) REIBUN GENERATOR</a
+            >
+        </footer>
         <span id="calc-noun" class="calc"></span>
         <span id="calc-part" class="calc"></span>
         <span id="calc-verb" class="calc"></span>
