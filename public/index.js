@@ -219,6 +219,8 @@
         .then((data) => {
           if (data) {
             createReibunListElement(data);
+            writeLog(`例文「${data}」を保存しました`);
+
           }
         })
         .finally(() => (isFetching = false))
@@ -270,7 +272,7 @@
   controller.getFavoriteWords(PATH_NOUN);
   controller.getFavoriteWords(PATH_PART);
   controller.getFavoriteWords(PATH_VERB);
-  writeLog("Hello!");
+  writeLog("Reibun Generator Start!");
 
   const keysPressed = {};
   let isKeyPressed = false;
