@@ -27,8 +27,6 @@ Navigate to the application directory and install the required dependencies:
 ```bash
 cd reibun-generator
 npm install
-npm start
-
 ```
 
 ### Start the application
@@ -36,7 +34,7 @@ npm start
 Run the application using the following command:
 
 ```bash
-http-server
+npm start
 ```
 
 By default, the server will start on port 3000. You can access the application by navigating to `http://localhost:3000` in your web browser.
