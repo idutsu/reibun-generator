@@ -4,7 +4,13 @@
     color: #009900;
     font-weight: normal;
     box-sizing: border-box;
+    background: none;
+    border: none;
+    border-radius: 0;
     outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 html {
@@ -29,7 +35,7 @@ a,
 a:visited,
 a:hover {
     color: inhert;
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 ul {
@@ -49,22 +55,23 @@ h1 {
     border-radius: 1px;
 }
 
-input[type="text"],
+#edit-noun,
+#edit-part,
+#edit-verb,
 .calc {
     height: 60px;
     line-height: 60px;
     font-size: 2.5rem;
-    background: none;
-    border: none;
-    border-radius: 0;
-    outline: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
+    margin-bottom: 10px;
+    padding: 0 3px;
 }
 
-input[type="text"] {
-    margin-bottom: 10px;
+.calc {
+    position: absolute;
+    display: inline-block;
+    height: 0;
+    overflow: hidden;
+    white-space: pre;
 }
 
 h3 {
@@ -83,19 +90,20 @@ h3 {
 
 .container {
     display: flex;
-    justify-content: space-around;
-    height: 400px;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
-.content {
-    width: calc(65% / 3);
-    height: 100%;
-    vertical-align: top;
-    padding: 0.25rem;
-}
-
-#reibun-box.content {
+#reibun-box {
     width: 35%;
+    height: 300px;
+}
+
+#fav-noun-box,
+#fav-part-box,
+#fav-verb-box {
+    width: calc((100% - 35% - 30px) / 3);
+    height: 300px;
 }
 
 #search-box {
@@ -108,9 +116,13 @@ h3 {
     background-color: black;
 }
 
+#logs-box {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
 #logs {
     height: 100px;
-    margin: 0 0.25rem 1rem;
     overflow-y: hidden;
 }
 
@@ -125,38 +137,6 @@ h3 {
     display: none;
 }
 
-.usage {
-    display: flex;
-    margin-bottom: 0.5rem;
-}
-
-dt {
-    display: flex;
-    margin-right: 5px;
-}
-
-dd {
-    flex-grow: 1;
-}
-
-.key {
-    display: flex;
-    min-width: 20px;
-    height: 25px;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    border: 1px solid #fff;
-    padding-left: 5px;
-    padding-right: 5px;
-    margin-right: 5px;
-}
-
 #copy {
     font-size: 0.9rem;
-}
-
-.calc {
-    display: none;
-    white-space: pre;
 }

@@ -5,116 +5,63 @@
         <link rel="stylesheet" href="style.css" />
         <title>REIBUN GENERATOR</title>
     </head>
-
     <body>
         <h1>REIBUN GENERATOR 1.0.0</h1>
-        <div>
+        <div class="area">
             <input
                 type="text"
                 value=""
                 id="edit-noun"
-                class="word"
+                class="selectable"
                 data-path="noun"
                 data-type="edit"
             /><input
                 type="text"
                 value=""
                 id="edit-part"
-                class="word"
+                class="selectable"
                 data-path="part"
                 data-type="edit"
             /><input
                 type="text"
                 value=""
                 id="edit-verb"
-                class="word"
+                class="selectable"
                 data-path="verb"
                 data-type="edit"
             />
         </div>
         <div class="container">
-            <div id="reibun-box" class="content">
+            <div id="reibun-box">
                 <h3>＋REIBUN</h3>
-                <ul id="reibun" class="list"></ul>
+                <div id="reibun" class="area list"></div>
             </div>
-            <div class="content">
+            <div id="fav-noun-box">
                 <h3>＋NOUN</h3>
-                <ul id="fav-noun" class="list"></ul>
+                <div id="fav-noun" class="area list"></div>
             </div>
-            <div class="content">
+            <div id="fav-part-box">
                 <h3>＋PARTICLE</h3>
-                <ul id="fav-part" class="list"></ul>
+                <div id="fav-part" class="area list"></div>
             </div>
-            <div class="content">
+            <div id="fav-verb-box">
                 <h3>＋VERB</h3>
-                <ul id="fav-verb" class="list"></ul>
+                <div id="fav-verb" class="area list"></div>
             </div>
-            <div id="search-box" class="content">
+            <div id="search-box">
                 <h3>＋SEARCH</h3>
-                <ul id="search" class="list"></ul>
+                <div id="search" class="area list"></div>
+            </div>
+            <div id="logs-box">
+                <h3>＋LOGS</h3>
+                <div id="logs" class="list"></div>
             </div>
         </div>
-        <dl id="usage">
-            <div class="usage">
-                <dt><span class="key">ENTER</span></dt>
-                <dd><span>CHANGE THE WORD / USE THE WORD</span></dd>
-            </div>
-            <div class="usage">
-                <dt><span class="key">D</span></dt>
-                <dd><span>DELETE THE WORD</span></dd>
-            </div>
-            <div class="usage">
-                <dt><span class="key">E</span></dt>
-                <dd><span>START EDITING THE WORD</span></dd>
-            </div>
-            <div class="usage">
-                <dt><span class="key">ESC</span></dt>
-                <dd><span>FINISH EDITING THE WORD </span></dd>
-            </div>
-            <div class="usage">
-                <dt><span class="key">S</span></dt>
-                <dd><span>ADD THE WORD TO FAVORITE</span></dd>
-            </div>
-            <div class="usage">
-                <dt><span class="key">SPACE</span></dt>
-                <dd><span>SAVE THE REIBUN</span></dd>
-            </div>
-            <div class="usage">
-                <dt><span class="key">F</span></dt>
-                <dd><span>SWITCH THE WORD IN REIBUN</span></dd>
-            </div>
-            <div class="usage">
-                <dt><span class="key">N</span></dt>
-                <dd><span>SELECT THE FAVORITE NOUN</span></dd>
-            </div>
-            <div class="usage">
-                <dt><span class="key">P</span></dt>
-                <dd><span>SELECT THE FAVORITE PARTICLE</span></dd>
-            </div>
-            <div class="usage">
-                <dt><span class="key">V</span></dt>
-                <dd><span>SELECT THE FAVORITE VERB</span></dd>
-            </div>
-            <div class="usage">
-                <dt><span class="key">S</span></dt>
-                <dd><span>SELECT THE SEARCH WORD</span></dd>
-            </div>
-            <div class="usage">
-                <dt><span class="key">R</span></dt>
-                <dd><span>SELECT THE SAVED REIBUN</span></dd>
-            </div>
-            <div class="usage">
-                <dt><span class="key">↑</span><span class="key">↓</span></dt>
-                <dd><span>SELECT THE NEXT/PREV WORD</span></dd>
-            </div>
-        </dl>
-        <h3>＋LOGS</h3>
-        <ul id="logs" class="list"></ul>
         <footer id="copy">
             <a
                 href="https://github.com/idutsu/reibun-generator/tree/main"
                 target="_blank"
-                >(C) 2024 REIBUN GENERATOR</a
+                >(C) 2024 Reibun Generator</a
             >
         </footer>
         <span id="calc-noun" class="calc"></span>

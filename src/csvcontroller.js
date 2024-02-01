@@ -1,108 +1,137 @@
 import fs from "fs";
-import path from "path";
+import * as pathUtils from "path";
 
-export default class CsvController {
-  constructor() {
-    this.csvFiles = {
-      save: {
-        reibun: "reibun.csv",
-      },
-      edit: {
-        noun: "noun.csv",
-        part: "part.csv",
-        verb: "verb.csv",
-      },
-      fav: {
-        noun: "fav-noun.csv",
-        part: "fav-part.csv",
-        verb: "fav-verb.csv",
-      },
-    };
-    this.cache = {};
+const CsvController = (() => {
+  const csvFiles = {
+    edit: {
+      noun: "noun.csv",
+      part: "part.csv",
+      verb: "verb.csv",
+    },
+    fav: {
+      noun: "fav-noun.csv",
+      part: "fav-part.csv",
+      verb: "fav-verb.csv",
+    },
+    search: {
+      noun: "noun.csv",
+      part: "part.csv",
+      verb: "verb.csv",
+    },
+    reibun: "reibun.csv",
+  };
+
+  const cache = {};
+
+  function _set(type, path) {
+    const filePath =
+      typeof csvFiles[type] === "string"
+        ? csvFiles[type]
+        : csvFiles[type][path];
+
+    if (!filePath) {
+      throw new Error(`File Not Found: type=${type}, path=${path}`);
+    }
+    return pathUtils.join(process.cwd(), "csv", filePath);
   }
 
-  getCsvFilePath(t, p) {
-    return path.join(process.cwd(), "csv", this.csvFiles[t][p]);
+  function _read(filePath, cacheFlag) {
+    if (cacheFlag && cache[filePath]) {
+      return Promise.resolve(cache[filePath]);
+    } else {
+      return fs.promises.readFile(filePath, "utf8").then((data) => {
+        if (cacheFlag) cache[filePath] = data;
+        return data;
+      });
+    }
   }
 
-  _read(filePath, cache) {
-    return new Promise((resolve, reject) => {
-      if (!fs.existsSync(filePath)) {
-        return reject(new Error("File not found"));
-      }
-
-      if (this.cache[filePath]) {
-        return resolve(this.cache[filePath]);
-      } else {
-        fs.readFile(filePath, "utf8", (err, data) => {
-          if (err) {
-            return reject(err);
-          } else {
-            if (cache) {
-              this.cache[filePath] = data;
-            }
-            return resolve(data);
-          }
-        });
-      }
-    });
-  }
-
-  _send(res, data) {
+  function _send(res, data, status) {
+    if (status) res.status(status);
     res.send(data);
   }
 
-  send(res, filePath, cache, callback, ...args) {
-    this._read(filePath, cache)
+  function get(res, type, path, cacheFlag, callback, ...args) {
+    const filePath = _set(type, path);
+    _read(filePath, cacheFlag)
       .then((data) => {
-        const processedData = callback(data, ...args);
-        this._send(res, processedData);
+        if (callback && typeof callback === "function") {
+          _send(res, callback(data, ...args));
+        } else {
+          _send(res, data);
+        }
       })
       .catch((err) => {
         if (err.code === "ENOENT") {
-          res.status(404).send("File not found");
+          _send(res, "File Not Found", 404);
         } else {
-          res.status(500).send("Internal Server Error");
+          console.error(err);
+          _send(res, "Internal Server Error", 500);
         }
       });
   }
 
-  write(res, filePath, str) {
-    return new Promise((resolve, reject) => {
-      fs.appendFile(filePath, str + "\n", "utf8", (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          res.send(str);
-          resolve("Data appended successfully");
-        }
-      });
-    }).catch((err) => {
-      res.status(500).send("Internal Server Error");
-    });
-  }
+  function save(res, type, path, str) {
+    const filePath = _set(type, path);
+    const inputData = str.split(",");
+    let found = false;
 
-  delete(res, filePath, str) {
-    this._read(filePath, false)
+    _read(filePath, false)
       .then((data) => {
         const lines = data.split("\n");
-        const filteredLines = lines.filter((line) => line.trim() !== str);
-        const updatedData = filteredLines.join("\n");
-        return new Promise((resolve, reject) => {
-          fs.writeFile(filePath, updatedData, "utf8", (err) => {
-            if (err) {
-              reject("Internal Server Error");
-            } else {
-              resolve(str);
-            }
-          });
-        });
+        for (let i = 0; i < lines.length; i++) {
+          const elements = lines[i].split(",");
+          if (elements[0] === inputData[0]) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          data += "\n" + str;
+        }
+        delete cache[filePath];
+        return fs.promises.writeFile(filePath, data, "utf8");
       })
-      .then((deletedWord) => {
-        res.send(deletedWord);
+      .then(() => {
+        _send(res, { found: found, text: str });
       })
-      .catch((errorMessage) => {
-        res.status(500).send(errorMessage);
+      .catch((err) => {
+        console.error(err);
+        _send(res, "Internal Server Error", 500);
       });
   }
-}
+
+  function del(res, type, path, str) {
+    const filePath = _set(type, path);
+    _read(filePath, false)
+      .then((data) => {
+        const lines = data.split("\n");
+
+        const nonMatchingLines = lines.filter(
+          (line) => line.split(",")[0].trim() !== str.split(",")[0],
+        );
+        const filteredLines = nonMatchingLines.filter(
+          (line) => line.trim() !== "",
+        );
+
+        const updatedData = filteredLines.join("\n");
+        delete cache[filePath];
+        return fs.promises.writeFile(filePath, updatedData, "utf8");
+      })
+      .then(() => {
+        _send(res, str);
+      })
+      .catch((err) => {
+        console.error(err);
+        _send(res, "Internal Server Error", 500);
+      });
+  }
+
+  return {
+    get: get,
+    save: save,
+    del: del,
+  };
+})();
+
+export default CsvController;

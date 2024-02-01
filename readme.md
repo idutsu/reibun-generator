@@ -2,7 +2,7 @@
 
 ![screenshot.png](screenshot.png)
 
-Reibun Generator is a web browser application primarily designed for local use, focused on generating Japanese example sentences. This application, built using Javascript, is optimized for PC use and is intended to be operated mainly through keyboard interactions.
+Reibun Generator is a web browser application primarily designed for local use, focused on generating Japanese example sentences. This application, built using `Node.js`, is optimized for PC use and is intended to be operated mainly through keyboard interactions.
 
 ## Installation
 
@@ -26,7 +26,8 @@ Navigate to the application directory and install the required dependencies:
 
 ```bash
 cd reibun-generator
-npm install -g http-server
+npm install
+npm start
 
 ```
 
@@ -38,7 +39,7 @@ Run the application using the following command:
 http-server
 ```
 
-By default, the server will start on port 8080. You can access the application by navigating to `http://localhost:8080` in your web browser.
+By default, the server will start on port 3000. You can access the application by navigating to `http://localhost:3000` in your web browser.
 
 ## Application Structure
 
@@ -50,11 +51,11 @@ This is where you create Japanese example sentences. The sentences are composed 
 
 ### Favorites Area
 
-This area is for saving words from the Reibun Area. (Note that these are not saved to a database, so they will be lost when the browser is refreshed.) Words can be selected and used in the example sentences by pressing the `Enter`.
+This area is for saving words from the Reibun Area. (Note that these are not saved to a database, so they will be lost when the browser is refreshed.)
 
 ### Search Area
 
-This area displays potential word suggestions when editing a word in the Reibun Area. Words can be selected and used in the example sentences by pressing the `Enter`.
+This area displays potential word suggestions when editing a word in the Reibun Area.
 
 ## Japanese Dictionaries
 
@@ -69,7 +70,8 @@ This application uses `IPA Dictionary` and  `Japanese Wordnet` to create example
 This application is designed to be used with a keyboard only, without the need for a mouse. Here are the key functionalities:
 
 - Selected words are highlighted in green.
-- `F` Switch the word(Noun/Particle/Verb) in Reibun Area.
+- `F` Switch the selected word(Noun/Particle/Verb) in the Reibun Area.
+- `A` In the Reibun Area, switch all the words.
 - `R` Select the Reibun Area.
 - `N` Select the Favorite Noun Area.
 - `P` Select the Favorite Particle Area.
@@ -78,10 +80,13 @@ This application is designed to be used with a keyboard only, without the need f
 - `Enter`
     - In the Reibun Area, it will be replaced with a random word from the dictionary.
     - In the Favorites Area or the Search Area, it will be used to replace the word in the sentence.
-- `S` Add the selected word in the Reibun Area to the Favorites Area.
+- `Space` Save the example sentence.
+- `S` Save the selected word in the Reibun Area to the Favorites Area.
 - `E`
-    - In hte Reibun Area, edit that word.
+    - In the Reibun Area, edit that word.
     - While typing, the Search Area shows potential matching words.
 - `ESC` Finish editing a word.
-- `Space` Save the example sentence to the indexdDB in your browser.
-- `Delete` Delete the selected word.
+- `Delete`
+    - In the Reibun Area or the Search Area, delete the word form the dictionary.
+    - In the Favorites Area, remove the selected word from your favorites.
+- `D` In the Reibun Area, add the selected word to the dictionary.

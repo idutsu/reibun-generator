@@ -4,7 +4,11 @@ export function getFavoriteWordsFromCsv(csvData) {
 
 export function getRandomWordFromCsv(csvData) {
   const lines = csvData.split("\n").filter((line) => line.trim());
-  return lines[Math.floor(Math.random() * lines.length)];
+  const randomNumber = Math.floor(Math.random() * lines.length);
+  return {
+    id: randomNumber,
+    text: lines[randomNumber].split(",")[0],
+  };
 }
 
 export function getReibunFromCsv(csvData) {
@@ -21,7 +25,7 @@ export function getSearchWordsFromCsv(csvData, searchWord) {
     return String.fromCharCode(match.charCodeAt(0) - 0x60);
   });
 
-  lines.forEach((line) => {
+  lines.forEach((line, index) => {
     const [word, reading] = line.split(",");
     if (
       (word &&
@@ -30,7 +34,7 @@ export function getSearchWordsFromCsv(csvData, searchWord) {
         (reading.startsWith(katakanaSearch) ||
           reading.startsWith(hiraganaSearch)))
     ) {
-      results.push(word);
+      results.push({ id: index, text: word });
     }
   });
   return results;
